@@ -31,7 +31,7 @@
   img, svg, video{ max-width:100%; }
   input, select, textarea, button{ max-width:100%; }
   .sr{ position:absolute !important; width:1px !important; height:1px !important; padding:0 !important; margin:-1px !important; overflow:hidden !important; clip:rect(0 0 0 0) !important; clip-path:inset(50%) !important; white-space:nowrap !important; border:0 !important; }
-  .layout > *, .compare > *, .detailGrid > *, .notesGrid > *, .facts > *, .verdictGrid > *, .seg > *, .shareActions > *, .shareActions .row2 > *, .sendPanel .row2 > *, .contact > *, .scoreHead > *, .cardHead > *, .flabel > *, dl.rows > div > *{ min-width:0; }
+  .layout > *, .compare > *, .detailGrid > *, .notesGrid > *, .facts > *, .verdictGrid > *, .seg > *, .shareActions > *, .shareActions .row2 > *, .contact > *, .scoreHead > *, .cardHead > *, .flabel > *, dl.rows > div > *{ min-width:0; }
   .cardHead{ flex-wrap:wrap; }
   .shareNote, .fineprint, .heroSub, .bestWhy, .sub, .fhelp{ overflow-wrap:break-word; }
   .wrap{ max-width:1180px; width:100%; margin:0 auto; padding:0 18px 56px; }
@@ -155,20 +155,21 @@
   .btnGold{ background:var(--gold); color:#1E1808; }
   .btnGhost{ border:1.5px solid rgba(255,255,255,.4); color:#fff; }
   .copyBtn{ margin-top:14px; width:100%; min-height:44px; border-radius:10px; border:none; background:var(--gold); color:#1E1808; font:inherit; font-weight:800; cursor:pointer; }
+  .calcWrap{ margin-top:20px; border-top:1px solid var(--line); padding-top:16px; }
+  .btnCalc{ width:100%; min-height:60px; border-radius:12px; border:none; background:#145C36; color:#FFFFFF; font:inherit; font-weight:800; font-size:19px; letter-spacing:.01em; cursor:pointer; padding:14px 18px; box-shadow:0 6px 18px rgba(20,92,54,.28); }
+  .btnCalc:hover{ background:#104A2C; }
+  .btnCalc:active{ background:#0D3E25; }
+  @media (prefers-color-scheme: dark){ .btnCalc{ background:#1E7A44; color:#FFFFFF; box-shadow:0 6px 18px rgba(0,0,0,.35); } .btnCalc:hover{ background:#176337; } }
+  .calcNote{ margin-top:9px; font-size:13px; color:var(--muted); line-height:1.5; text-align:center; }
+  .calcSaved{ margin-top:10px; font-size:14px; font-weight:700; border-radius:10px; padding:10px 12px; display:none; background:var(--greenBg); color:var(--green); text-align:center; }
+  .calcSaved.show{ display:block; }
+  @media (prefers-color-scheme: light){ .calcSaved{ color:#145C36; } }
   .shareActions{ display:grid; gap:9px; margin-top:14px; }
   .shareActions .row2{ display:grid; grid-template-columns:1fr 1fr; gap:9px; }
-  .btnSend{ width:100%; min-height:48px; border-radius:10px; border:none; background:var(--gold); color:#1E1808; font:inherit; font-weight:800; font-size:16px; cursor:pointer; }
+  .btnSend{ display:flex; align-items:center; justify-content:center; text-align:center; width:100%; min-height:48px; padding:10px 12px; border-radius:10px; border:none; background:var(--gold); color:#1E1808; font:inherit; font-weight:800; font-size:16px; cursor:pointer; text-decoration:none; }
   .btnSave{ width:100%; min-height:44px; border-radius:10px; border:1.5px solid rgba(255,255,255,.55); background:transparent; color:#fff; font:inherit; font-weight:800; cursor:pointer; }
   .btnCopy{ width:100%; min-height:44px; border-radius:10px; border:1.5px solid rgba(255,255,255,.28); background:rgba(255,255,255,.08); color:#EDE7D6; font:inherit; font-weight:700; cursor:pointer; }
   .shareNote{ margin-top:10px; font-size:13px; color:#BFC9D8; line-height:1.5; }
-  .sendPanel{ display:none; margin-top:12px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.22); border-radius:12px; padding:14px; }
-  .sendPanel.show{ display:block; }
-  .sendPanel p{ font-size:14px; color:#D8DEE8; line-height:1.55; }
-  .sendPanel p b{ color:#fff; }
-  .sendPanel textarea{ width:100%; margin-top:10px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); background:var(--surface); color:var(--ink); font:inherit; font-size:16px; line-height:1.5; resize:vertical; }
-  .sendPanel .row2{ display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-top:10px; }
-  .btnMailLink{ display:inline-flex; align-items:center; justify-content:center; text-align:center; min-height:44px; padding:10px 12px; border-radius:10px; background:var(--gold); color:#1E1808; font-weight:800; font-size:15px; text-decoration:none; }
-  @media (max-width:560px){ .sendPanel .row2{ grid-template-columns:1fr; } }
   .shareNote b{ color:#EDE7D6; }
   .actionStatus{ margin-top:10px; font-size:14px; font-weight:700; border-radius:10px; padding:10px 12px; display:none; }
   .actionStatus.show{ display:block; }
@@ -232,12 +233,12 @@
   <div class="layout">
     <section class="card" aria-labelledby="formTitle">
       <div class="cardHead"><h2 id="formTitle">Your numbers</h2><span class="hint">Results update as you type</span></div>
-      <p class="sub">Use your best honest estimates. Nothing you enter leaves this page until you choose to send it to Karan below.</p>
+      <p class="sub">Use your best honest estimates. When you tap Calculate, your results are shared with Karan Tamang so he can follow up with you.</p>
 
       <label class="field">
         <span class="flabel">Client name</span>
         <input type="text" id="inClientName" placeholder="e.g. Alex Johnson" autocomplete="name" />
-        <span class="fhelp">Used to label a saved report and to head the summary you send to Karan.</span>
+        <span class="fhelp">Used to label a saved report and to head your copied summary.</span>
       </label>
 
       <label class="field">
@@ -304,6 +305,12 @@
           <span class="fhelp">Lender fees, title, appraisal, and prepaid taxes and insurance. Two to five percent is the normal range.</span>
         </label>
       </details>
+
+      <div class="calcWrap">
+        <button class="btnCalc" type="button" id="calcBtn">Calculate</button>
+        <p class="calcNote">Your results are shared with Karan Tamang when you tap Calculate.</p>
+        <div class="calcSaved" id="calcSaved" role="status" aria-live="polite"></div>
+      </div>
     </section>
 
     <div>
@@ -318,21 +325,13 @@
         </div>
         <div class="gapLine gapOk" id="gapLine"></div>
         <div class="shareActions">
-          <button class="btnSend" type="button" id="sendBtn">Send to Karan</button>
+          <a class="btnSend" href="mailto:karan.tamang@city2shore.com?subject=Home%20Buyer%20Readiness%20Calculator">Send Email</a>
           <div class="row2">
             <button class="btnSave" type="button" id="saveBtn">Save Report</button>
             <button class="btnCopy" type="button" id="copyBtn">Copy summary</button>
           </div>
         </div>
-        <div class="sendPanel" id="sendPanel">
-          <p><b>Your summary is ready.</b> Tap Open email to Karan and press send in your email app to deliver it. If no email app opens on this device, use the copy in this box and paste it into any email or text to Karan at karan.tamang@city2shore.com.</p>
-          <textarea id="sendText" rows="9" readonly aria-label="Your home buyer readiness summary, ready to copy"></textarea>
-          <div class="row2">
-            <a class="btnMailLink" id="sendMailLink" href="mailto:karan.tamang@city2shore.com">Open email to Karan</a>
-            <button class="btnCopy" type="button" id="sendCopyBtn">Copy summary</button>
-          </div>
-        </div>
-        <p class="shareNote"><b>Send to Karan</b> prepares the full summary right here on this page, copies it for you, and gives you an email button addressed only to Karan at karan.tamang@city2shore.com. Nothing is sent until you press send in your email. <b>Save Report</b> keeps this report on this device only, under the client name above. It is not uploaded, and no one else can open it from another device.</p>
+        <p class="shareNote"><b>Send Email</b> opens your email app addressed to Karan at karan.tamang@city2shore.com so you can write to him directly. Your results are already shared with Karan when you tap Calculate in the form. <b>Copy summary</b> puts the full summary on your clipboard for your own records. <b>Save Report</b> keeps this report on this device only, under the client name above. It is not uploaded, and no one else can open it from another device.</p>
         <div class="actionStatus" id="actionStatus" role="status" aria-live="polite"></div>
       </section>
 
@@ -350,7 +349,7 @@
 
   <section class="card" aria-labelledby="savedTitle" style="margin-top:18px">
     <div class="cardHead"><h2 id="savedTitle">Saved reports</h2><span class="hint">This device only</span></div>
-    <p class="sub">Reports you save stay on this phone or computer only. They are not sent anywhere and cannot be opened from another device. Load one to bring its numbers back into the calculator, or delete it when you no longer need it. Summaries you send go only to Karan.</p>
+    <p class="sub">Reports you save stay on this phone or computer only. They are not sent anywhere and cannot be opened from another device. Load one to bring its numbers back into the calculator, or delete it when you no longer need it.</p>
     <div id="savedList"></div>
   </section>
 
@@ -431,7 +430,7 @@
     </div>
     <div class="contactBtns">
       <a class="btnGold" href="tel:+16166176564">Call (616) 617 6564</a>
-      <a class="btnGhost" href="mailto:karan.tamang@city2shore.com">Email Karan</a>
+      <a class="btnGhost" href="mailto:karan.tamang@city2shore.com?subject=Home%20Buyer%20Readiness%20Calculator">Send Email</a>
     </div>
   </div>
 
@@ -792,6 +791,63 @@
   $("inPriceNum").addEventListener("input", syncFromNum);
   $("ftYes").addEventListener("click", function(){ state.firstTime = true; state.selected = null; $("ftYes").setAttribute("aria-pressed","true"); $("ftNo").setAttribute("aria-pressed","false"); render(); });
   $("ftNo").addEventListener("click", function(){ state.firstTime = false; state.selected = null; $("ftYes").setAttribute("aria-pressed","false"); $("ftNo").setAttribute("aria-pressed","true"); render(); });
+  var FORM_RESPONSE_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfk0nNqxKCLtpe1tW-uKUH7MRvRGp0T-7r2tW77JkbS7xNPeg/formResponse";
+  var FORM_ENTRIES = {
+    clientName: "entry.1354418155",
+    monthlyIncome: "entry.1454199432",
+    monthlyDebts: "entry.1402870022",
+    creditScore: "entry.868495072",
+    savings: "entry.1035078935",
+    monthlySavingAbility: "entry.1873339263",
+    targetHomePrice: "entry.1531953795",
+    firstTimeBuyerStatus: "entry.1224971941",
+    likelyMaxPrice: "entry.1052128262",
+    monthlyPaymentBestFit: "entry.1883982434",
+    cashToCloseBestFit: "entry.408850729",
+    bestFitProgram: "entry.1620219733",
+    readinessScore: "entry.318794708"
+  };
+  function saveToGoogleForm(L){
+    try {
+      var best = L.res[L.rec.pick];
+      var score = computeScore(L.res, L.rec, L.inp, L.maxes).total;
+      var nameVal = "";
+      var nameEl = $("inClientName");
+      if (nameEl && nameEl.value && nameEl.value.trim()) nameVal = nameEl.value.trim();
+      if (!nameVal) nameVal = "Not provided";
+      var params = new URLSearchParams();
+      params.set(FORM_ENTRIES.clientName, nameVal);
+      params.set(FORM_ENTRIES.monthlyIncome, String(Math.round(L.inp.monthlyIncome)));
+      params.set(FORM_ENTRIES.monthlyDebts, String(Math.round(L.inp.debts)));
+      params.set(FORM_ENTRIES.creditScore, String(Math.round(L.inp.credit)));
+      params.set(FORM_ENTRIES.savings, String(Math.round(L.inp.saved)));
+      params.set(FORM_ENTRIES.monthlySavingAbility, String(Math.round(L.inp.saveMo)));
+      params.set(FORM_ENTRIES.targetHomePrice, String(Math.round(L.inp.price)));
+      params.set(FORM_ENTRIES.firstTimeBuyerStatus, state.firstTime ? "First time buyer" : "Has owned a home before");
+      params.set(FORM_ENTRIES.likelyMaxPrice, money(L.maxes[L.rec.pick]));
+      params.set(FORM_ENTRIES.monthlyPaymentBestFit, money(best.total));
+      params.set(FORM_ENTRIES.cashToCloseBestFit, money(best.cash));
+      params.set(FORM_ENTRIES.bestFitProgram, PROG_META[L.rec.pick].full);
+      params.set(FORM_ENTRIES.readinessScore, String(score));
+      fetch(FORM_RESPONSE_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: params.toString()
+      }).then(function(){}, function(){});
+    } catch (e) { /* background save never blocks the results */ }
+  }
+  $("calcBtn").addEventListener("click", function(){
+    render();
+    var L = state.last; if (!L) return;
+    saveToGoogleForm(L);
+    var savedEl = $("calcSaved");
+    savedEl.textContent = "Saved. Your results were shared with Karan Tamang.";
+    savedEl.className = "calcSaved show";
+    showStatus("Saved. Your results were shared with Karan Tamang.", true);
+    var verdictEl = document.querySelector(".verdict");
+    if (verdictEl) verdictEl.scrollIntoView({ behavior:"smooth", block:"start" });
+  });
   var STORE_KEY = "hbrc_saved_reports_v1";
   var memReports = null;
   function loadReports(){
@@ -948,35 +1004,12 @@
       navigator.clipboard.writeText(text).then(function(){ done(true); }, fallback);
     } else { fallback(); }
   }
-  $("sendBtn").addEventListener("click", function(){
-    var L = state.last; if (!L) return;
-    var name = clientName();
-    var subject = "Home Buyer Readiness" + (name ? " — " + name : " Summary");
-    var body = buildSummary(name, L);
-    $("sendText").value = body;
-    $("sendMailLink").href = "mailto:karan.tamang@city2shore.com?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
-    $("sendPanel").className = "sendPanel show";
-    copyText(body, function(ok){
-      showStatus(ok
-        ? "Your summary is ready in the box below and a copy is on your clipboard. Tap Open email to Karan to send it from your email app, or paste the copy into any email or text to Karan."
-        : "Your summary is ready in the box below. Tap Open email to Karan to send it from your email app, or select the text in the box and copy it into any email or text to Karan.", true);
-    });
-    $("sendPanel").scrollIntoView({ behavior:"smooth", block:"nearest" });
-  });
-  $("sendCopyBtn").addEventListener("click", function(){
-    var btn = this;
-    copyText($("sendText").value, function(ok){
-      btn.textContent = ok ? "Copied" : "Select the text above to copy";
-      setTimeout(function(){ btn.textContent = "Copy summary"; }, 3200);
-      if (ok) showStatus("Summary copied. Paste it into any email or text addressed to Karan at karan.tamang@city2shore.com.", true);
-    });
-  });
   $("copyBtn").addEventListener("click", function(){
     var L = state.last; if (!L) return;
     var lines = buildSummary(clientName(), L);
     var btn = this;
     copyText(lines, function(ok){
-      btn.textContent = ok ? "Copied. Paste it in a text or email to Karan." : "Copy was blocked. Tap Send to Karan and copy from the box.";
+      btn.textContent = ok ? "Copied. Paste it in a text or email to Karan." : "Copy was blocked by your browser. Please try again.";
       setTimeout(function(){ btn.textContent = "Copy summary"; }, 3200);
     });
   });
