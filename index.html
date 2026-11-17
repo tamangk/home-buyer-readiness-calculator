@@ -65,12 +65,11 @@
   .fhelp{ font-size:13px; color:var(--muted); margin-top:2px; }
   input[type="number"], input[type="text"], select{ width:100%; margin-top:7px; padding:10px 12px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface); color:var(--ink); font:inherit; font-size:16px; }
   input[type="number"]:focus, input[type="text"]:focus, select:focus, input[type="range"]:focus-visible{ outline:3px solid var(--goldSoft); border-color:var(--gold); }
-  .reqMark{ color:var(--red); font-weight:800; }
-  .reqTag{ font-size:11.5px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; color:var(--red); background:var(--redBg); border-radius:999px; padding:2px 8px; white-space:nowrap; }
+  .reqMark{ color:var(--goldInk); font-weight:800; }
   input.fieldInvalid{ border-color:var(--red) !important; outline:3px solid var(--redBg); }
   .fieldError{ display:none; font-size:13px; font-weight:700; color:var(--red); margin-top:5px; }
   .fieldError.show{ display:block; }
-  @media (prefers-color-scheme: light){ .fieldError{ color:#8E2B20; } .reqMark{ color:#B03A2E; } }
+  @media (prefers-color-scheme: light){ .fieldError{ color:#8E2B20; } }
   .calcSaved.err{ background:var(--redBg); color:var(--red); }
   @media (prefers-color-scheme: light){ .calcSaved.err{ color:#8E2B20; } }
   .emptyPrompt{ border:1px dashed var(--line); border-radius:12px; padding:18px; text-align:center; color:var(--ink2); font-size:14.5px; background:var(--surface2); }
@@ -245,21 +244,21 @@
       <p class="sub">Use your best honest estimates. Fields marked <span class="reqMark" aria-hidden="true">*</span> are required to calculate your estimates. When you tap Calculate, your results are shared with Karan Tamang so he can follow up with you.</p>
 
       <label class="field">
-        <span class="flabel"><span>Your full name <span class="reqMark" aria-hidden="true">*</span></span> <span class="reqTag">Required</span></span>
+        <span class="flabel"><span>Your full name <span class="reqMark" aria-hidden="true">*</span></span></span>
         <input type="text" id="inClientName" placeholder="e.g. Alex Johnson" autocomplete="name" required aria-required="true" aria-describedby="errClientName" />
         <span class="fieldError" id="errClientName" role="alert">Please enter your full name.</span>
         <span class="fhelp">Used to label a saved report and to head your copied summary.</span>
       </label>
 
       <label class="field">
-        <span class="flabel"><span>Household income per year <span class="reqMark" aria-hidden="true">*</span></span> <span class="reqTag">Required</span> <output id="oIncome">—</output></span>
+        <span class="flabel"><span>Household income per year <span class="reqMark" aria-hidden="true">*</span></span> <output id="oIncome">—</output></span>
         <span class="money"><span>$</span><input type="number" id="inIncome" value="" placeholder="e.g. 85,000" min="1" step="1000" inputmode="numeric" required aria-required="true" aria-describedby="errIncome" /></span>
         <span class="fieldError" id="errIncome" role="alert">Please enter your household income per year.</span>
         <span class="fhelp">Gross pay for everyone who will be on the loan, before taxes.</span>
       </label>
 
       <label class="field">
-        <span class="flabel"><span>Monthly debts <span class="reqMark" aria-hidden="true">*</span></span> <span class="reqTag">Required</span> <output id="oDebts">—</output></span>
+        <span class="flabel"><span>Monthly debts <span class="reqMark" aria-hidden="true">*</span></span> <output id="oDebts">—</output></span>
         <span class="money"><span>$</span><input type="number" id="inDebts" value="" placeholder="e.g. 450" min="0" step="25" inputmode="numeric" required aria-required="true" aria-describedby="errDebts" /></span>
         <span class="fieldError" id="errDebts" role="alert">Please enter your monthly debts. Enter 0 if you have none.</span>
         <span class="fhelp">Car payments, credit card minimums, student loans, and other loan payments. Do not include rent, utilities, or groceries. Enter 0 if you have none.</span>
@@ -272,21 +271,21 @@
       </label>
 
       <label class="field">
-        <span class="flabel"><span>Cash saved for the home <span class="reqMark" aria-hidden="true">*</span></span> <span class="reqTag">Required</span> <output id="oSaved">—</output></span>
+        <span class="flabel"><span>Cash saved for the home <span class="reqMark" aria-hidden="true">*</span></span> <output id="oSaved">—</output></span>
         <span class="money"><span>$</span><input type="number" id="inSaved" value="" placeholder="e.g. 18,000" min="0" step="500" inputmode="numeric" required aria-required="true" aria-describedby="errSaved" /></span>
         <span class="fieldError" id="errSaved" role="alert">Please enter the cash you have saved for the home. Enter 0 if you have not saved yet.</span>
         <span class="fhelp">Money you could put toward the down payment and closing costs. Keep a separate emergency cushion if you can. Enter 0 if you have not saved yet.</span>
       </label>
 
       <label class="field">
-        <span class="flabel"><span>You can save per month <span class="reqMark" aria-hidden="true">*</span></span> <span class="reqTag">Required</span> <output id="oSaveMo">—</output></span>
+        <span class="flabel"><span>You can save per month <span class="reqMark" aria-hidden="true">*</span></span> <output id="oSaveMo">—</output></span>
         <span class="money"><span>$</span><input type="number" id="inSaveMo" value="" placeholder="e.g. 600" min="0" step="50" inputmode="numeric" required aria-required="true" aria-describedby="errSaveMo" /></span>
         <span class="fieldError" id="errSaveMo" role="alert">Please enter how much you can save per month. Enter 0 if you cannot save right now.</span>
         <span class="fhelp">Used to show how long it takes to close any cash gap. Enter 0 if you cannot save right now.</span>
       </label>
 
       <label class="field">
-        <span class="flabel"><span>Home price you have in mind <span class="reqMark" aria-hidden="true">*</span></span> <span class="reqTag">Required</span> <output id="oPrice">—</output></span>
+        <span class="flabel"><span>Home price you have in mind <span class="reqMark" aria-hidden="true">*</span></span> <output id="oPrice">—</output></span>
         <input type="range" id="inPrice" min="100000" max="800000" step="5000" value="100000" aria-label="Target home price slider. Dragging fills in the price below." />
         <span class="money"><span>$</span><input type="number" id="inPriceNum" value="" placeholder="e.g. 320,000" min="1" step="5000" inputmode="numeric" aria-label="Target home price in dollars" required aria-required="true" aria-describedby="errPrice" /></span>
         <span class="fieldError" id="errPrice" role="alert">Please enter the home price you have in mind, or drag the slider above.</span>
