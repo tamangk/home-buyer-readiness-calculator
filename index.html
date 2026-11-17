@@ -37,6 +37,10 @@
   .wrap{ max-width:1180px; width:100%; margin:0 auto; padding:0 18px 56px; }
   h1,h2,h3{ font-family:"DM Serif Display",Georgia,serif; font-weight:400; line-height:1.12; margin:0; }
   p{ margin:0; }
+  .langBar{ display:flex; justify-content:flex-end; margin-bottom:16px; }
+  .langToggle{ display:inline-flex; gap:3px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.28); border-radius:999px; padding:3px; }
+  .langToggle button{ border:none; background:transparent; color:#EDE7D6; border-radius:999px; padding:8px 18px; font:inherit; font-weight:800; font-size:15px; cursor:pointer; min-height:40px; }
+  .langToggle button[aria-pressed="true"]{ background:var(--gold); color:#1E1808; }
   .hero{ background:var(--navy); color:#F4EFE3; border-radius:0 0 22px 22px; padding:34px 0 30px; margin:0; }
   .heroInner{ max-width:1180px; margin:0 auto; padding:0 18px; text-align:left; }
   .hero h1{ font-size:clamp(32px,5.2vw,52px); max-width:14em; margin-left:auto; margin-right:auto; text-align:center; color:var(--gold); }
@@ -221,6 +225,12 @@
 <body>
 <header class="hero">
   <div class="heroInner">
+    <div class="langBar">
+      <div class="langToggle" role="group" aria-label="Language">
+        <button type="button" id="langEn" aria-pressed="true">English</button>
+        <button type="button" id="langNe" aria-pressed="false">नेपाली</button>
+      </div>
+    </div>
     <h1>Home Affordability Calculator</h1>
     <p class="heroTag">See what you can buy, what it costs each month, and what cash you need to get there.</p>
     <p class="heroSub">Enter your income, debts, credit score, and savings once. This planner works out the home price you likely qualify for, the true monthly payment, and the cash needed to close, then compares Conventional, FHA, and Michigan MSHDA side by side and points to the best fit for your situation.</p>
@@ -456,6 +466,7 @@
 <script>
 (function(){
   var $ = function(id){ return document.getElementById(id); };
+  function tx(en, ne){ return (window.__lang === "ne") ? ne : en; }
   var state = { firstTime:true, selected:null };
   var COLORS = { pi:"#122A46", tax:"#B08A3E", ins:"#5B84AE", mi:"#C46A4A" };
   if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches){ COLORS.pi = "#D3AC5F"; }
@@ -528,14 +539,14 @@
   }
 
   function creditWordFn(s){
-    if (s >= 740) return "Excellent. You should get the best pricing on every program.";
-    if (s >= 700) return "Strong. Every program is open, with good pricing.";
-    if (s >= 660) return "Good. Most programs are open to you, and MSHDA is within reach.";
-    if (s >= 640) return "Fair, and an important line. MSHDA opens up at 640.";
-    if (s >= 620) return "Fair. Conventional opens at 620, but pricing is costly. MSHDA needs 640.";
-    if (s >= 580) return "Building. FHA at 3.5 percent down is your main path right now.";
-    if (s >= 500) return "Building. FHA is possible with 10 percent down while you raise your score.";
-    return "Below 500, loan options are very limited. Credit work comes first.";
+    if (s >= 740) return tx("Excellent. You should get the best pricing on every program.", "उत्कृष्ट। तपाईंले हरेक कार्यक्रममा सबैभन्दा राम्रो मूल्य पाउनुपर्छ।");
+    if (s >= 700) return tx("Strong. Every program is open, with good pricing.", "बलियो। हरेक कार्यक्रम खुला छ, राम्रो मूल्यसहित।");
+    if (s >= 660) return tx("Good. Most programs are open to you, and MSHDA is within reach.", "राम्रो। धेरैजसो कार्यक्रमहरू तपाईंका लागि खुला छन्, र MSHDA पहुँचभित्र छ।");
+    if (s >= 640) return tx("Fair, and an important line. MSHDA opens up at 640.", "ठीकै, र यो महत्त्वपूर्ण रेखा हो। MSHDA 640 बाट खुल्छ।");
+    if (s >= 620) return tx("Fair. Conventional opens at 620, but pricing is costly. MSHDA needs 640.", "ठीकै। कन्भेन्सनल 620 बाट खुल्छ, तर मूल्य महँगो पर्छ। MSHDA का लागि 640 चाहिन्छ।");
+    if (s >= 580) return tx("Building. FHA at 3.5 percent down is your main path right now.", "बन्दै छ। अहिले FHA मा 3.5 प्रतिशत डाउन नै तपाईंको मुख्य बाटो हो।");
+    if (s >= 500) return tx("Building. FHA is possible with 10 percent down while you raise your score.", "बन्दै छ। तपाईंले स्कोर बढाउँदै गर्दा 10 प्रतिशत डाउनमा FHA सम्भव छ।");
+    return tx("Below 500, loan options are very limited. Credit work comes first.", "500 भन्दा कममा ऋणका विकल्पहरू निकै सीमित छन्। पहिले क्रेडिट सुधारमा ध्यान दिनुहोस्।");
   }
 
   function readInputs(){
@@ -559,21 +570,21 @@
     function ok(c){ return c.eligible && c.affords; }
     var pick = null, why = "";
     if (ok(msh) && inp.saved < msh.cash + 4000 && inp.credit >= 640){
-      pick = "mshda"; why = "Your credit clears the 640 MSHDA line and your price is under the $566,355 limit, so the $10,000 of state help cuts your cash to close to the lowest of the three while keeping the payment in range for your income.";
+      pick = "mshda"; why = tx("Your credit clears the 640 MSHDA line and your price is under the $566,355 limit, so the $10,000 of state help cuts your cash to close to the lowest of the three while keeping the payment in range for your income.", "तपाईंको क्रेडिटले 640 को MSHDA रेखा पार गर्छ र तपाईंको मूल्य $566,355 को सीमाभन्दा कम छ, त्यसैले $10,000 को राज्य सहायताले तपाईंको समापन नगद तीनमध्ये सबैभन्दा कम बनाउँछ र भुक्तानी तपाईंको आम्दानीको दायराभित्र राख्छ।");
     } else if (ok(conv) && inp.credit >= 700 && conv.downPct >= 0.03 && inp.saved >= conv.cash){
-      pick = "conv"; why = "Your credit score earns good Conventional pricing, you have the cash to close, and your mortgage insurance can be removed at 20 percent equity instead of lasting the life of the loan as it does with FHA.";
+      pick = "conv"; why = tx("Your credit score earns good Conventional pricing, you have the cash to close, and your mortgage insurance can be removed at 20 percent equity instead of lasting the life of the loan as it does with FHA.", "तपाईंको क्रेडिट स्कोरले राम्रो कन्भेन्सनल मूल्य दिलाउँछ, तपाईंसँग समापन गर्ने नगद छ, र तपाईंको धितो बीमा 20 प्रतिशत इक्विटीमा हटाउन सकिन्छ, FHA मा जस्तो ऋण अवधिभर रहँदैन।");
     } else if (ok(fha) && !ok(conv)){
-      pick = "fha"; why = "FHA fits where Conventional does not right now, thanks to its lower credit floor and room for higher debts. It gets you into the home while you keep building credit.";
+      pick = "fha"; why = tx("FHA fits where Conventional does not right now, thanks to its lower credit floor and room for higher debts. It gets you into the home while you keep building credit.", "FHA त्यहाँ मिल्छ जहाँ कन्भेन्सनल अहिले मिल्दैन, यसको कम क्रेडिट सीमा र बढी ऋणको छुटका कारण। यसले तपाईंलाई क्रेडिट बनाउँदै घरमा प्रवेश गराउँछ।");
     } else if (ok(conv)){
-      pick = "conv"; why = "Conventional gives you the cleanest long term cost at your credit score, with mortgage insurance that can be removed, and no upfront premium rolled into the loan.";
+      pick = "conv"; why = tx("Conventional gives you the cleanest long term cost at your credit score, with mortgage insurance that can be removed, and no upfront premium rolled into the loan.", "कन्भेन्सनलले तपाईंको क्रेडिट स्कोरमा सबैभन्दा सफा दीर्घकालीन लागत दिन्छ, हटाउन सकिने धितो बीमासहित, र ऋणमा जोडिने अग्रिम प्रिमियम बिना।");
     } else if (ok(msh)){
-      pick = "mshda"; why = "MSHDA is the one option that fits your income at this price, and the $10,000 of help keeps your cash to close within reach.";
+      pick = "mshda"; why = tx("MSHDA is the one option that fits your income at this price, and the $10,000 of help keeps your cash to close within reach.", "MSHDA नै यो मूल्यमा तपाईंको आम्दानीसँग मिल्ने एक मात्र विकल्प हो, र $10,000 को सहायताले तपाईंको समापन नगद पहुँचभित्र राख्छ।");
     } else if (ok(fha)){
-      pick = "fha"; why = "FHA is the option that fits your numbers at this price today.";
+      pick = "fha"; why = tx("FHA is the option that fits your numbers at this price today.", "FHA नै आज यो मूल्यमा तपाईंको तथ्याङ्कसँग मिल्ने विकल्प हो।");
     } else {
       var near = [conv, fha, msh].filter(function(c){ return c.eligible; }).sort(function(a,b){ return a.backDti - b.backDti; })[0];
-      if (near){ pick = near.prog; why = "At this price, no program quite fits your income and debts yet. " + PROG_META[near.prog].name + " is your closest path, and your plan below shows exactly what to change to get there."; }
-      else { pick = "fha"; why = "No program fits yet at this price and credit score. Your plan below starts with the change that unlocks the most options."; }
+      if (near){ pick = near.prog; why = tx("At this price, no program quite fits your income and debts yet. " + PROG_META[near.prog].name + " is your closest path, and your plan below shows exactly what to change to get there.", "यो मूल्यमा कुनै पनि कार्यक्रम अहिले तपाईंको आम्दानी र ऋणसँग ठ्याक्कै मिल्दैन। " + PROG_META[near.prog].name + " तपाईंको सबैभन्दा नजिकको बाटो हो, र तलको तपाईंको योजनाले त्यहाँ पुग्न के परिवर्तन गर्ने भनेर ठ्याक्कै देखाउँछ।"); }
+      else { pick = "fha"; why = tx("No program fits yet at this price and credit score. Your plan below starts with the change that unlocks the most options.", "यो मूल्य र क्रेडिट स्कोरमा अहिले कुनै कार्यक्रम मिल्दैन। तलको तपाईंको योजना सबैभन्दा धेरै विकल्प खोल्ने परिवर्तनबाट सुरु हुन्छ।"); }
     }
     order = [pick].concat(["mshda","conv","fha"].filter(function(p){ return p !== pick; }));
     return { pick:pick, why:why, order:order };
@@ -626,8 +637,8 @@
     $("oRate").textContent = inp.rate.toFixed(2) + "%";
     $("oTax").textContent = inp.tax.toFixed(2) + "% of price";
     $("oClose").textContent = inp.close.toFixed(1) + "% of price";
-    $("bestName").textContent = "Your estimate will appear here";
-    $("bestWhy").textContent = "Fill in the required fields marked * in the form, then tap Calculate. Nothing is recorded until you do.";
+    $("bestName").textContent = tx("Your estimate will appear here", "तपाईंको अनुमान यहाँ देखिनेछ");
+    $("bestWhy").textContent = tx("Fill in the required fields marked * in the form, then tap Calculate. Nothing is recorded until you do.", "फारममा * चिन्ह लगाइएका आवश्यक क्षेत्रहरू भर्नुहोस्, त्यसपछि गणना गर्नुहोस् थिच्नुहोस्। तपाईंले नथिचेसम्म केही रेकर्ड हुँदैन।");
     $("vMax").textContent = "—";
     $("vMaxNote").textContent = "";
     $("vPay").textContent = "—";
@@ -635,21 +646,21 @@
     $("vCashNote").textContent = "";
     var gapEl = $("gapLine");
     gapEl.className = "gapLine gapNo";
-    gapEl.textContent = "Still needed: " + missing.map(function(f){ return f.label; }).join(", ") + ".";
+    gapEl.textContent = tx("Still needed: ", "अझै चाहिन्छ: ") + missing.map(function(f){ return f.label; }).join(", ") + ".";
     $("scoreNum").textContent = "—";
-    $("scoreWord").textContent = "Waiting for your numbers";
-    $("scoreSub").textContent = "Complete the required fields to see your readiness score.";
+    $("scoreWord").textContent = tx("Waiting for your numbers", "तपाईंको तथ्याङ्कको प्रतीक्षामा");
+    $("scoreSub").textContent = tx("Complete the required fields to see your readiness score.", "तपाईंको तयारी स्कोर हेर्न आवश्यक क्षेत्रहरू पूरा गर्नुहोस्।");
     $("scoreBar").style.width = "0%";
-    $("factors").innerHTML = '<p class="emptyPrompt">Your score factors will appear once the required fields are complete.</p>';
-    $("compare").innerHTML = '<p class="emptyPrompt" style="grid-column:1/-1">Enter the required fields to compare Conventional, FHA, and MSHDA at your price.</p>';
-    $("detailTitle").textContent = "The full picture for your best fit";
-    $("payBars").innerHTML = '<p class="emptyPrompt">Your monthly payment breakdown will appear here.</p>';
+    $("factors").innerHTML = tx('<p class="emptyPrompt">Your score factors will appear once the required fields are complete.</p>', '<p class="emptyPrompt">तपाईंका स्कोर कारकहरू आवश्यक क्षेत्रहरू पूरा भएपछि देखिनेछन्।</p>');
+    $("compare").innerHTML = tx('<p class="emptyPrompt" style="grid-column:1/-1">Enter the required fields to compare Conventional, FHA, and MSHDA at your price.</p>', '<p class="emptyPrompt" style="grid-column:1/-1">तपाईंको मूल्यमा कन्भेन्सनल, FHA, र MSHDA तुलना गर्न आवश्यक क्षेत्रहरू भर्नुहोस्।</p>');
+    $("detailTitle").textContent = tx("The full picture for your best fit", "तपाईंको सबैभन्दा उपयुक्तको पूरा विवरण");
+    $("payBars").innerHTML = tx('<p class="emptyPrompt">Your monthly payment breakdown will appear here.</p>', '<p class="emptyPrompt">तपाईंको मासिक भुक्तानी विवरण यहाँ देखिनेछ।</p>');
     $("payLegend").innerHTML = "";
     $("payRows").innerHTML = "";
-    $("cashRows").innerHTML = "<div><dt>Cash needed to close</dt><dd>—</dd></div>";
-    $("loanFacts").innerHTML = "<b>Loan facts.</b> Complete the required fields to see the loan details for your best fit.";
-    $("steps").innerHTML = '<li><div><b>Enter your numbers</b><p>Fill in the required fields marked *, then tap Calculate to build your plan.</p></div></li>';
-    $("saveTimeline").innerHTML = "<b>Your timeline.</b> Once you enter how much you can save each month and your target price, this plan will show the month your cash to close is ready.";
+    $("cashRows").innerHTML = tx("<div><dt>Cash needed to close</dt><dd>—</dd></div>", "<div><dt>समापन गर्न चाहिने नगद</dt><dd>—</dd></div>");
+    $("loanFacts").innerHTML = tx("<b>Loan facts.</b> Complete the required fields to see the loan details for your best fit.", "<b>ऋण तथ्यहरू।</b> तपाईंको सबैभन्दा उपयुक्त कार्यक्रमका ऋण विवरणहरू हेर्न आवश्यक क्षेत्रहरू पूरा गर्नुहोस्।");
+    $("steps").innerHTML = tx('<li><div><b>Enter your numbers</b><p>Fill in the required fields marked *, then tap Calculate to build your plan.</p></div></li>', '<li><div><b>तपाईंको तथ्याङ्क भर्नुहोस्</b><p>* चिन्ह लगाइएका आवश्यक क्षेत्रहरू भर्नुहोस्, त्यसपछि तपाईंको योजना बनाउन गणना गर्नुहोस् थिच्नुहोस्।</p></div></li>');
+    $("saveTimeline").innerHTML = tx("<b>Your timeline.</b> Once you enter how much you can save each month and your target price, this plan will show the month your cash to close is ready.", "<b>तपाईंको समयरेखा।</b> तपाईंले हरेक महिना कति बचत गर्न सक्नुहुन्छ र तपाईंको लक्षित मूल्य भरेपछि, यो योजनाले तपाईंको समापन नगद तयार हुने महिना देखाउनेछ।");
   }
 
   function render(){
@@ -682,25 +693,25 @@
     $("bestName").textContent = PROG_META[rec.pick].full;
     $("bestWhy").textContent = rec.why;
     var bestMax = Math.max(maxes[rec.pick] || 0, 0);
-    $("vMax").textContent = bestMax ? money(bestMax) : "Not yet";
-    $("vMaxNote").textContent = bestMax ? "With " + PROG_META[rec.pick].name + ", based on your income and debts." : "See your plan below for the first step.";
+    $("vMax").textContent = bestMax ? money(bestMax) : tx("Not yet", "अझै होइन");
+    $("vMaxNote").textContent = bestMax ? tx("With " + PROG_META[rec.pick].name + ", based on your income and debts.", PROG_META[rec.pick].name + " सँग, तपाईंको आम्दानी र ऋणका आधारमा।") : tx("See your plan below for the first step.", "पहिलो चरणका लागि तलको तपाईंको योजना हेर्नुहोस्।");
     $("vPay").textContent = money(best.total);
     $("vCash").textContent = money(best.cash);
-    $("vCashNote").textContent = "At " + money(inp.price) + " with " + PROG_META[rec.pick].name + ". You have " + money(inp.saved) + " saved.";
+    $("vCashNote").textContent = tx("At " + money(inp.price) + " with " + PROG_META[rec.pick].name + ". You have " + money(inp.saved) + " saved.", money(inp.price) + " मा " + PROG_META[rec.pick].name + " सँग। तपाईंसँग " + money(inp.saved) + " बचत छ।");
     var gap = best.cash - inp.saved;
     var gapEl = $("gapLine");
     if (!best.eligible){
       gapEl.className = "gapLine gapNo";
-      gapEl.textContent = "Heads up on your best fit: " + best.eligNote + ". Your plan below shows how to clear it.";
+      gapEl.textContent = tx("Heads up on your best fit: " + best.eligNote + ". Your plan below shows how to clear it.", "तपाईंको सबैभन्दा उपयुक्तबारे ध्यान दिनुहोस्: " + best.eligNote + "। तलको तपाईंको योजनाले यसलाई कसरी हटाउने देखाउँछ।");
     } else if (!best.affords){
       gapEl.className = "gapLine gapNo";
-      gapEl.textContent = "At " + money(inp.price) + " the payment takes " + pct(best.backDti*100) + " of your gross income once debts are counted. " + PROG_META[rec.pick].name + " allows about " + pct(best.maxDti*100) + ", so a lower price or lower debts gets you there.";
+      gapEl.textContent = tx("At " + money(inp.price) + " the payment takes " + pct(best.backDti*100) + " of your gross income once debts are counted. " + PROG_META[rec.pick].name + " allows about " + pct(best.maxDti*100) + ", so a lower price or lower debts gets you there.", money(inp.price) + " मा, ऋणहरू गन्दा भुक्तानीले तपाईंको कुल आम्दानीको " + pct(best.backDti*100) + " लिन्छ। " + PROG_META[rec.pick].name + " ले करिब " + pct(best.maxDti*100) + " सम्म अनुमति दिन्छ, त्यसैले कम मूल्य वा कम ऋणले तपाईंलाई त्यहाँ पुर्‍याउँछ।");
     } else if (gap <= 0){
       gapEl.className = "gapLine gapOk";
-      gapEl.textContent = "You are covered. Your savings cover the cash to close at this price, with " + money(-gap) + " to spare before moving costs and reserves.";
+      gapEl.textContent = tx("You are covered. Your savings cover the cash to close at this price, with " + money(-gap) + " to spare before moving costs and reserves.", "तपाईं तयार हुनुहुन्छ। तपाईंको बचतले यो मूल्यमा समापन नगद धान्छ, सर्ने खर्च र रिजर्भअघि " + money(-gap) + " बाँकी रहन्छ।");
     } else {
       gapEl.className = "gapLine gapNo";
-      gapEl.textContent = "Cash gap of " + money(gap) + " at this price with " + PROG_META[rec.pick].name + "." + (inp.saveMo > 0 ? " Saving " + money(inp.saveMo) + " a month closes it in about " + Math.ceil(gap/inp.saveMo) + " months." : " Add a monthly saving amount to see how long the gap takes to close.");
+      gapEl.textContent = tx("Cash gap of " + money(gap) + " at this price with " + PROG_META[rec.pick].name + "." + (inp.saveMo > 0 ? " Saving " + money(inp.saveMo) + " a month closes it in about " + Math.ceil(gap/inp.saveMo) + " months." : " Add a monthly saving amount to see how long the gap takes to close."), PROG_META[rec.pick].name + " सँग यो मूल्यमा " + money(gap) + " को नगद अभाव छ।" + (inp.saveMo > 0 ? " महिनामा " + money(inp.saveMo) + " बचत गर्दा करिब " + Math.ceil(gap/inp.saveMo) + " महिनामा पूरा हुन्छ।" : " कति समय लाग्छ हेर्न मासिक बचत रकम थप्नुहोस्।"));
     }
 
     renderCompare(res, maxes, rec);
@@ -767,13 +778,13 @@
   }
 
   function renderDetail(c, inp){
-    $("detailTitle").textContent = "The full picture: " + PROG_META[c.prog].full + " at " + money(c.price);
-    $("payTitle").textContent = "Monthly payment breakdown";
+    $("detailTitle").textContent = tx("The full picture: " + PROG_META[c.prog].full + " at " + money(c.price), "पूरा विवरण: " + PROG_META[c.prog].full + " — " + money(c.price));
+    $("payTitle").textContent = tx("Monthly payment breakdown", "मासिक भुक्तानी विवरण");
     var parts = [
-      { k:"Principal and interest", v:c.pi, color:COLORS.pi },
-      { k:"Property taxes", v:c.tax, color:COLORS.tax },
-      { k:"Homeowners insurance", v:c.ins, color:COLORS.ins },
-      { k: c.prog === "fha" ? "FHA mortgage insurance" : "Mortgage insurance", v:c.mi, color:COLORS.mi }
+      { k:tx("Principal and interest", "मूलधन र ब्याज"), v:c.pi, color:COLORS.pi },
+      { k:tx("Property taxes", "सम्पत्ति कर"), v:c.tax, color:COLORS.tax },
+      { k:tx("Homeowners insurance", "घरधनी बीमा"), v:c.ins, color:COLORS.ins },
+      { k: c.prog === "fha" ? tx("FHA mortgage insurance", "FHA धितो बीमा") : tx("Mortgage insurance", "धितो बीमा"), v:c.mi, color:COLORS.mi }
     ].filter(function(x){ return x.v > 0.5; });
     var barHtml = '<div class="bar" role="img" aria-label="Payment split">';
     parts.forEach(function(x){ barHtml += '<i style="width:' + (x.v/c.total*100) + '%;background:' + x.color + '"></i>'; });
@@ -781,22 +792,22 @@
     $("payBars").innerHTML = barHtml;
     $("payLegend").innerHTML = parts.map(function(x){ return '<span><i style="background:' + x.color + '"></i>' + x.k + "</span>"; }).join("");
     var rows = parts.map(function(x){ return "<div><dt>" + x.k + "</dt><dd>" + money(x.v) + "</dd></div>"; }).join("");
-    rows += '<div class="total"><dt>Total monthly payment</dt><dd>' + money(c.total) + "</dd></div>";
-    rows += "<div><dt>Plus your other debts</dt><dd>" + money(inp.debts) + "</dd></div>";
-    rows += "<div><dt>Share of gross income</dt><dd>" + pct(c.backDti*100) + " (limit " + pct(c.maxDti*100) + ")</dd></div>";
+    rows += '<div class="total"><dt>' + tx("Total monthly payment", "कुल मासिक भुक्तानी") + '</dt><dd>' + money(c.total) + "</dd></div>";
+    rows += "<div><dt>" + tx("Plus your other debts", "तपाईंका अन्य ऋणहरू थप") + "</dt><dd>" + money(inp.debts) + "</dd></div>";
+    rows += "<div><dt>" + tx("Share of gross income", "कुल आम्दानीको हिस्सा") + "</dt><dd>" + tx(pct(c.backDti*100) + " (limit " + pct(c.maxDti*100) + ")", pct(c.backDti*100) + " (सीमा " + pct(c.maxDti*100) + ")") + "</dd></div>";
     $("payRows").innerHTML = rows;
 
-    var cash = '<div><dt>Down payment</dt><dd>' + money(c.down) + "</dd></div>"
-      + "<div><dt>Closing costs estimate</dt><dd>" + money(c.closing) + "</dd></div>";
-    if (c.dpa) cash += "<div><dt>MSHDA MI 10K help</dt><dd>" + money(c.dpa) + "</dd></div>";
-    cash += '<div class="total"><dt>Cash needed to close</dt><dd>' + money(c.cash) + "</dd></div>"
-      + "<div><dt>You have saved</dt><dd>" + money(inp.saved) + "</dd></div>"
-      + "<div><dt>" + (c.cash > inp.saved ? "Still to save" : "Left over after closing") + "</dt><dd>" + money(Math.abs(c.cash - inp.saved)) + "</dd></div>";
+    var cash = '<div><dt>' + tx("Down payment", "डाउन पेमेन्ट") + '</dt><dd>' + money(c.down) + "</dd></div>"
+      + "<div><dt>" + tx("Closing costs estimate", "समापन खर्च अनुमान") + "</dt><dd>" + money(c.closing) + "</dd></div>";
+    if (c.dpa) cash += "<div><dt>" + tx("MSHDA MI 10K help", "MSHDA MI 10K सहायता") + "</dt><dd>" + money(c.dpa) + "</dd></div>";
+    cash += '<div class="total"><dt>' + tx("Cash needed to close", "समापन गर्न चाहिने नगद") + '</dt><dd>' + money(c.cash) + "</dd></div>"
+      + "<div><dt>" + tx("You have saved", "तपाईंले बचत गर्नुभएको") + "</dt><dd>" + money(inp.saved) + "</dd></div>"
+      + "<div><dt>" + (c.cash > inp.saved ? tx("Still to save", "अझै बचत गर्न बाँकी") : tx("Left over after closing", "समापनपछि बाँकी")) + "</dt><dd>" + money(Math.abs(c.cash - inp.saved)) + "</dd></div>";
     $("cashRows").innerHTML = cash;
-    var facts = "<b>Loan facts.</b> " + money(c.loan) + " loan at " + c.rate.toFixed(2) + "% for 30 years.";
-    if (c.prog === "fha") facts += " That includes the upfront mortgage insurance premium of " + money(c.upfront) + " rolled into the loan. Monthly mortgage insurance runs for the life of the loan when you put less than 10 percent down, so many FHA buyers refinance into Conventional later.";
-    else if (c.prog === "mshda") facts += " The MI 10K help sits behind this loan as a second loan of " + money(c.dpa) + " with zero interest and no monthly payment, due when you sell, refinance, or pay off the first loan.";
-    else facts += c.mi > 0 ? " Mortgage insurance of about " + money(c.mi) + " a month is included until you reach about 20 percent equity, then it can be removed." : " No mortgage insurance is included at this down payment.";
+    var facts = tx("<b>Loan facts.</b> " + money(c.loan) + " loan at " + c.rate.toFixed(2) + "% for 30 years.", "<b>ऋण तथ्यहरू।</b> 30 वर्षका लागि " + c.rate.toFixed(2) + "% मा " + money(c.loan) + " ऋण।");
+    if (c.prog === "fha") facts += tx(" That includes the upfront mortgage insurance premium of " + money(c.upfront) + " rolled into the loan. Monthly mortgage insurance runs for the life of the loan when you put less than 10 percent down, so many FHA buyers refinance into Conventional later.", " त्यसमा ऋणमा जोडिएको " + money(c.upfront) + " को अग्रिम धितो बीमा प्रिमियम समावेश छ। तपाईंले 10 प्रतिशतभन्दा कम डाउन राख्दा मासिक धितो बीमा ऋण अवधिभर चल्छ, त्यसैले धेरै FHA खरिदकर्ताहरू पछि कन्भेन्सनलमा पुनर्वित्त गर्छन्।");
+    else if (c.prog === "mshda") facts += tx(" The MI 10K help sits behind this loan as a second loan of " + money(c.dpa) + " with zero interest and no monthly payment, due when you sell, refinance, or pay off the first loan.", " MI 10K सहायता यस ऋणको पछाडि शून्य ब्याज र मासिक भुक्तानी बिना " + money(c.dpa) + " को दोस्रो ऋणका रूपमा बस्छ, तपाईंले बेच्दा, पुनर्वित्त गर्दा, वा पहिलो ऋण तिर्दा तिर्नुपर्छ।");
+    else facts += c.mi > 0 ? tx(" Mortgage insurance of about " + money(c.mi) + " a month is included until you reach about 20 percent equity, then it can be removed.", " करिब " + money(c.mi) + " मासिक धितो बीमा तपाईं करिब 20 प्रतिशत इक्विटीमा नपुगेसम्म समावेश छ, त्यसपछि हटाउन सकिन्छ।") : tx(" No mortgage insurance is included at this down payment.", " यो डाउन पेमेन्टमा धितो बीमा समावेश छैन।");
     $("loanFacts").innerHTML = facts;
   }
 
@@ -811,11 +822,12 @@
     var dtiF = dti <= 0.36 ? 100 : dti <= 0.43 ? 84 : dti <= 0.50 ? 64 : dti <= 0.57 ? 42 : 20;
     var cashF = best.cash <= 0 ? 100 : Math.min(100, inp.saved / best.cash * 100);
     var optionsF = [res.conv, res.fha, res.mshda].filter(function(c){ return c.eligible && c.affords; }).length / 3 * 100;
+    var optCount = [res.conv, res.fha, res.mshda].filter(function(c){ return c.eligible && c.affords; }).length;
     var factors = [
-      factor("Credit score", creditScoreF, inp.credit + " today. " + (inp.credit < 640 ? "Reaching 640 opens MSHDA, and 700 or higher earns clearly better Conventional pricing." : inp.credit < 740 ? "Reaching 740 earns the best loan pricing." : "Top tier pricing is available to you.")),
-      factor("Debts versus income", dtiF, "Your payment plus debts take " + pct(dti*100) + " of gross income at your target price. Lenders are most comfortable at 45 percent or less."),
-      factor("Cash ready", cashF, money(inp.saved) + " saved against " + money(best.cash) + " needed to close with your best fit program."),
-      factor("Options open to you", optionsF, [res.conv, res.fha, res.mshda].filter(function(c){ return c.eligible && c.affords; }).length + " of 3 programs fit your numbers at this price right now.")
+      factor(tx("Credit score", "क्रेडिट स्कोर"), creditScoreF, tx(inp.credit + " today. " + (inp.credit < 640 ? "Reaching 640 opens MSHDA, and 700 or higher earns clearly better Conventional pricing." : inp.credit < 740 ? "Reaching 740 earns the best loan pricing." : "Top tier pricing is available to you."), "आज " + inp.credit + "। " + (inp.credit < 640 ? "640 पुग्दा MSHDA खुल्छ, र 700 वा माथि पुग्दा कन्भेन्सनल मूल्य स्पष्ट रूपमा राम्रो हुन्छ।" : inp.credit < 740 ? "740 पुग्दा सबैभन्दा राम्रो ऋण मूल्य पाइन्छ।" : "तपाईंका लागि शीर्ष तहको मूल्य उपलब्ध छ।"))),
+      factor(tx("Debts versus income", "आम्दानीको तुलनामा ऋण"), dtiF, tx("Your payment plus debts take " + pct(dti*100) + " of gross income at your target price. Lenders are most comfortable at 45 percent or less.", "तपाईंको लक्षित मूल्यमा तपाईंको भुक्तानी र ऋणले कुल आम्दानीको " + pct(dti*100) + " लिन्छ। ऋणदाताहरू 45 प्रतिशत वा कममा सबैभन्दा सहज हुन्छन्।")),
+      factor(tx("Cash ready", "नगद तयार"), cashF, tx(money(inp.saved) + " saved against " + money(best.cash) + " needed to close with your best fit program.", money(inp.saved) + " बचत छ, तपाईंको सबैभन्दा उपयुक्त कार्यक्रमसँग समापन गर्न " + money(best.cash) + " चाहिन्छ।")),
+      factor(tx("Options open to you", "तपाईंका लागि खुला विकल्पहरू"), optionsF, tx(optCount + " of 3 programs fit your numbers at this price right now.", "3 मध्ये " + optCount + " कार्यक्रमहरू अहिले यो मूल्यमा तपाईंको तथ्याङ्कसँग मिल्छन्।"))
     ];
     var total = Math.round(factors[0].score*0.3 + factors[1].score*0.3 + factors[2].score*0.25 + factors[3].score*0.15);
     return { total:total, factors:factors };
@@ -825,11 +837,11 @@
     var s = computeScore(res, rec, inp, maxes);
     $("scoreNum").textContent = s.total;
     $("scoreBar").style.width = s.total + "%";
-    var word = s.total >= 80 ? "Ready to buy" : s.total >= 60 ? "Close, with a clear path" : s.total >= 40 ? "Getting there" : "Early days, start with step one";
+    var word = s.total >= 80 ? tx("Ready to buy", "किन्न तयार") : s.total >= 60 ? tx("Close, with a clear path", "नजिक, स्पष्ट बाटोसहित") : s.total >= 40 ? tx("Getting there", "अघि बढ्दै") : tx("Early days, start with step one", "सुरुवाती चरण, पहिलो चरणबाट सुरु गर्नुहोस्");
     $("scoreWord").textContent = word;
-    $("scoreSub").textContent = s.total >= 80 ? "Your numbers fit a real purchase. A lender preapproval is your next move." : s.total >= 60 ? "One or two focused moves put you in buying position." : "The plan below is sequenced so each step unlocks the next.";
+    $("scoreSub").textContent = s.total >= 80 ? tx("Your numbers fit a real purchase. A lender preapproval is your next move.", "तपाईंको तथ्याङ्क वास्तविक खरिदसँग मिल्छ। ऋणदाताको पूर्व स्वीकृति तपाईंको अर्को कदम हो।") : s.total >= 60 ? tx("One or two focused moves put you in buying position.", "एक वा दुई केन्द्रित कदमले तपाईंलाई खरिद स्थितिमा पुर्‍याउँछ।") : tx("The plan below is sequenced so each step unlocks the next.", "तलको योजना यसरी मिलाइएको छ कि हरेक चरणले अर्कोलाई खोल्छ।");
     $("factors").innerHTML = s.factors.map(function(f){
-      return '<div class="factor"><div class="bl"><span>' + f.label + '</span><span>' + f.score + ' of 100</span></div><div class="track"><i style="width:' + f.score + '%"></i></div><p>' + f.note + "</p></div>";
+      return '<div class="factor"><div class="bl"><span>' + f.label + '</span><span>' + tx(f.score + ' of 100', '100 मध्ये ' + f.score) + '</span></div><div class="track"><i style="width:' + f.score + '%"></i></div><p>' + f.note + "</p></div>";
     }).join("");
   }
 
@@ -838,42 +850,42 @@
     var best = res[rec.pick];
     var overallMax = Math.max(maxes.conv, maxes.fha, maxes.mshda);
     if (inp.credit < 580){
-      steps.push({ t:"Raise your credit score first", p:"At " + inp.credit + ", your only loan path today is FHA with 10 percent down, and below 500 even that closes. Pay cards down below 30 percent of their limits, pay everything on time, and avoid new credit. Reaching 580 unlocks FHA at 3.5 percent down, 620 unlocks Conventional, and 640 unlocks MSHDA help." });
+      steps.push({ t:tx("Raise your credit score first", "पहिले तपाईंको क्रेडिट स्कोर बढाउनुहोस्"), p:tx("At " + inp.credit + ", your only loan path today is FHA with 10 percent down, and below 500 even that closes. Pay cards down below 30 percent of their limits, pay everything on time, and avoid new credit. Reaching 580 unlocks FHA at 3.5 percent down, 620 unlocks Conventional, and 640 unlocks MSHDA help.", inp.credit + " मा, आज तपाईंको एक मात्र ऋण बाटो 10 प्रतिशत डाउनमा FHA हो, र 500 भन्दा तल त्यो पनि बन्द हुन्छ। कार्डहरू तिनीहरूको सीमाको 30 प्रतिशतभन्दा तल झार्नुहोस्, सबै भुक्तानी समयमा गर्नुहोस्, र नयाँ क्रेडिट नलिनुहोस्। 580 पुग्दा FHA 3.5 प्रतिशत डाउनमा खुल्छ, 620 मा कन्भेन्सनल खुल्छ, र 640 मा MSHDA सहायता खुल्छ।") });
     } else if (inp.credit < 640){
-      steps.push({ t:"Push your score to 640", p:"You are " + (640 - inp.credit) + " points from the MSHDA line. Crossing it can put up to $10,000 of state help toward your down payment and closing costs, which is often worth more than months of extra saving." });
+      steps.push({ t:tx("Push your score to 640", "तपाईंको स्कोर 640 पुर्‍याउनुहोस्"), p:tx("You are " + (640 - inp.credit) + " points from the MSHDA line. Crossing it can put up to $10,000 of state help toward your down payment and closing costs, which is often worth more than months of extra saving.", "तपाईं MSHDA रेखाबाट " + (640 - inp.credit) + " अङ्क टाढा हुनुहुन्छ। यसलाई पार गर्दा $10,000 सम्मको राज्य सहायता तपाईंको डाउन पेमेन्ट र समापन खर्चतर्फ जान सक्छ, जुन प्रायः महिनौंको अतिरिक्त बचतभन्दा बढी मूल्यवान हुन्छ।") });
     } else if (inp.credit < 700){
-      steps.push({ t:"Keep building toward 700", p:"You already qualify broadly at " + inp.credit + ". Scores of 700 and above earn better rates and cheaper mortgage insurance, which can save more each month than a slightly bigger down payment." });
+      steps.push({ t:tx("Keep building toward 700", "700 तर्फ बढाउँदै जानुहोस्"), p:tx("You already qualify broadly at " + inp.credit + ". Scores of 700 and above earn better rates and cheaper mortgage insurance, which can save more each month than a slightly bigger down payment.", "तपाईं " + inp.credit + " मा पहिले नै व्यापक रूपमा योग्य हुनुहुन्छ। 700 र माथिका स्कोरले राम्रो ब्याजदर र सस्तो धितो बीमा दिलाउँछ, जसले हरेक महिना अलि ठूलो डाउन पेमेन्टभन्दा बढी बचत गर्न सक्छ।") });
     }
     if (!best.affords || inp.price > overallMax){
-      var targetPrice = overallMax ? money(overallMax) : "a lower price";
+      var targetPrice = overallMax ? money(overallMax) : tx("a lower price", "कम मूल्य");
       var debtRoom = Math.max(0, Math.round(best.maxDti * inp.monthlyIncome - best.total - inp.debts));
-      steps.push({ t:"Bring the payment into range", p:"At " + money(inp.price) + ", your payment plus debts take " + pct(best.backDti*100) + " of gross income against a limit near " + pct(best.maxDti*100) + ". Two levers fix it: shop near " + targetPrice + " instead, or lower monthly debts. Every $100 a month of debt you remove raises the price you can carry by roughly $15,000 to $18,000 at today\u2019s rates." });
+      steps.push({ t:tx("Bring the payment into range", "भुक्तानीलाई दायराभित्र ल्याउनुहोस्"), p:tx("At " + money(inp.price) + ", your payment plus debts take " + pct(best.backDti*100) + " of gross income against a limit near " + pct(best.maxDti*100) + ". Two levers fix it: shop near " + targetPrice + " instead, or lower monthly debts. Every $100 a month of debt you remove raises the price you can carry by roughly $15,000 to $18,000 at today\u2019s rates.", money(inp.price) + " मा, तपाईंको भुक्तानी र ऋणले कुल आम्दानीको " + pct(best.backDti*100) + " लिन्छ, सीमा करिब " + pct(best.maxDti*100) + " छ। दुई उपायले यसलाई मिलाउँछ: बरु करिब " + targetPrice + " नजिक किनमेल गर्नुहोस्, वा मासिक ऋण घटाउनुहोस्। तपाईंले हटाउने हरेक $100 मासिक ऋणले आजको ब्याजदरमा तपाईंले धान्न सक्ने मूल्य करिब $15,000 देखि $18,000 सम्म बढाउँछ।") });
     }
     var gap = best.cash - inp.saved;
     if (gap > 0){
-      steps.push({ t:"Close the cash gap of " + money(gap), p:"With " + PROG_META[rec.pick].name + " you need " + money(best.cash) + " to close and you have " + money(inp.saved) + ". " + (inp.saveMo > 0 ? "At " + money(inp.saveMo) + " a month you are there in about " + Math.ceil(gap/inp.saveMo) + " months. " : "") + "Seller concessions and gift funds from family can also count with most programs, and MSHDA help is already counted where it applies." });
+      steps.push({ t:tx("Close the cash gap of " + money(gap), money(gap) + " को नगद अभाव पूरा गर्नुहोस्"), p:tx("With " + PROG_META[rec.pick].name + " you need " + money(best.cash) + " to close and you have " + money(inp.saved) + ". " + (inp.saveMo > 0 ? "At " + money(inp.saveMo) + " a month you are there in about " + Math.ceil(gap/inp.saveMo) + " months. " : "") + "Seller concessions and gift funds from family can also count with most programs, and MSHDA help is already counted where it applies.", PROG_META[rec.pick].name + " सँग तपाईंलाई समापन गर्न " + money(best.cash) + " चाहिन्छ र तपाईंसँग " + money(inp.saved) + " छ। " + (inp.saveMo > 0 ? "महिनामा " + money(inp.saveMo) + " का दरले तपाईं करिब " + Math.ceil(gap/inp.saveMo) + " महिनामा त्यहाँ पुग्नुहुन्छ। " : "") + "धेरैजसो कार्यक्रमहरूमा विक्रेताको छुट र परिवारको उपहार रकम पनि गनिन्छ, र MSHDA सहायता लागू हुने ठाउँमा पहिले नै गनिएको छ।") });
     } else {
-      steps.push({ t:"Protect the cash you have", p:"Your savings cover closing with " + money(-gap) + " left over. Keep at least three months of payments untouched as your emergency cushion, and do not open new debts or move large sums without telling your lender first." });
+      steps.push({ t:tx("Protect the cash you have", "तपाईंसँग भएको नगद जोगाउनुहोस्"), p:tx("Your savings cover closing with " + money(-gap) + " left over. Keep at least three months of payments untouched as your emergency cushion, and do not open new debts or move large sums without telling your lender first.", "तपाईंको बचतले समापन धान्छ र " + money(-gap) + " बाँकी रहन्छ। कम्तीमा तीन महिनाको भुक्तानी आपतकालीन कोषका रूपमा नछुनुहोस्, र पहिले ऋणदातालाई नभनी नयाँ ऋण नलिनुहोस् वा ठूला रकम नसार्नुहोस्।") });
     }
     if (rec.pick === "mshda"){
-      steps.push({ t:"Line up MSHDA early", p:"MSHDA loans run through participating lenders only, and the homebuyer education course takes a few hours online. Do both before you shop, and confirm your household income sits within the MSHDA limit for your county and household size." });
+      steps.push({ t:tx("Line up MSHDA early", "MSHDA चाँडै मिलाउनुहोस्"), p:tx("MSHDA loans run through participating lenders only, and the homebuyer education course takes a few hours online. Do both before you shop, and confirm your household income sits within the MSHDA limit for your county and household size.", "MSHDA ऋणहरू सहभागी ऋणदाताहरूमार्फत मात्र चल्छन्, र घर खरिदकर्ता शिक्षा कोर्सले अनलाइन केही घण्टा लिन्छ। किनमेल गर्नुअघि दुवै गर्नुहोस्, र तपाईंको घरायसी आम्दानी तपाईंको काउन्टी र घरको आकारका लागि MSHDA सीमाभित्र छ भनी पुष्टि गर्नुहोस्।") });
     }
     if (rec.pick === "fha"){
-      steps.push({ t:"Plan your FHA exit", p:"FHA mortgage insurance usually lasts the life of the loan. Buy with FHA now if it fits, then refinance into Conventional once your credit and equity reach 20 percent to drop that cost for good." });
+      steps.push({ t:tx("Plan your FHA exit", "तपाईंको FHA निकास योजना बनाउनुहोस्"), p:tx("FHA mortgage insurance usually lasts the life of the loan. Buy with FHA now if it fits, then refinance into Conventional once your credit and equity reach 20 percent to drop that cost for good.", "FHA धितो बीमा सामान्यतया ऋण अवधिभर रहन्छ। अहिले मिल्छ भने FHA बाट किन्नुहोस्, त्यसपछि तपाईंको क्रेडिट र इक्विटी 20 प्रतिशत पुगेपछि त्यो खर्च सदाका लागि हटाउन कन्भेन्सनलमा पुनर्वित्त गर्नुहोस्।") });
     }
-    steps.push({ t:"Get a real preapproval", p:"This page plans with estimates. A local lender can verify income, debts, and credit in about a day and give you the letter sellers require. Ask Karan for lender options who work with " + PROG_META[rec.pick].name + " loans in West Michigan." });
-    steps.push({ t:"Start watching homes at your number", p:"Your likely ceiling with your best fit is " + (maxes[rec.pick] ? money(maxes[rec.pick]) : "still to be set") + ", and your target is " + money(inp.price) + ". Watching listings in that range now teaches you what your money buys in each neighborhood before you are ready to offer." });
+    steps.push({ t:tx("Get a real preapproval", "वास्तविक पूर्व स्वीकृति लिनुहोस्"), p:tx("This page plans with estimates. A local lender can verify income, debts, and credit in about a day and give you the letter sellers require. Ask Karan for lender options who work with " + PROG_META[rec.pick].name + " loans in West Michigan.", "यो पृष्ठले अनुमानसहित योजना बनाउँछ। स्थानीय ऋणदाताले करिब एक दिनमा आम्दानी, ऋण र क्रेडिट प्रमाणित गरी विक्रेताहरूले माग्ने पत्र दिन सक्छन्। पश्चिम मिचिगनमा " + PROG_META[rec.pick].name + " ऋणसँग काम गर्ने ऋणदाता विकल्पहरूका लागि Karan लाई सोध्नुहोस्।") });
+    steps.push({ t:tx("Start watching homes at your number", "तपाईंको सङ्ख्यामा घरहरू हेर्न सुरु गर्नुहोस्"), p:tx("Your likely ceiling with your best fit is " + (maxes[rec.pick] ? money(maxes[rec.pick]) : "still to be set") + ", and your target is " + money(inp.price) + ". Watching listings in that range now teaches you what your money buys in each neighborhood before you are ready to offer.", "तपाईंको सबैभन्दा उपयुक्तसँग तपाईंको सम्भावित अधिकतम " + (maxes[rec.pick] ? money(maxes[rec.pick]) : "अझै तय हुन बाँकी") + " हो, र तपाईंको लक्ष्य " + money(inp.price) + " हो। अहिले त्यो दायराका सूचीहरू हेर्दा तपाईं तयार भएर प्रस्ताव गर्नुअघि नै हरेक छिमेकमा तपाईंको पैसाले के किन्न सक्छ सिकाउँछ।") });
     $("steps").innerHTML = steps.slice(0,5).map(function(s){ return "<li><div><b>" + s.t + "</b><p>" + s.p + "</p></div></li>"; }).join("");
     var tl = "";
     if (gap > 0 && inp.saveMo > 0){
       var months = Math.ceil(gap/inp.saveMo);
       var d = new Date(); d.setMonth(d.getMonth() + months);
       var monthName = d.toLocaleDateString("en-US", { month:"long", year:"numeric" });
-      tl = "<b>Your timeline.</b> Saving " + money(inp.saveMo) + " a month, your cash to close is ready around <b>" + monthName + "</b>, about " + months + " months from now. Use that window for the credit and lender steps above, and you can be shopping with a preapproval the moment the cash lands.";
+      tl = tx("<b>Your timeline.</b> Saving " + money(inp.saveMo) + " a month, your cash to close is ready around <b>" + monthName + "</b>, about " + months + " months from now. Use that window for the credit and lender steps above, and you can be shopping with a preapproval the moment the cash lands.", "<b>तपाईंको समयरेखा।</b> महिनामा " + money(inp.saveMo) + " बचत गर्दा, तपाईंको समापन नगद करिब <b>" + monthName + "</b> मा तयार हुन्छ, अहिलेबाट करिब " + months + " महिना। त्यो समय क्रेडिट र ऋणदाताका चरणहरूका लागि प्रयोग गर्नुहोस्, र नगद आउनेबित्तिकै पूर्व स्वीकृतिसहित किनमेल गर्न सक्नुहुन्छ।");
     } else if (gap <= 0){
-      tl = "<b>Your timeline.</b> Your cash is ready now. The remaining timeline is a lender preapproval, which usually takes a day or two once documents are in, and then your home search itself.";
+      tl = tx("<b>Your timeline.</b> Your cash is ready now. The remaining timeline is a lender preapproval, which usually takes a day or two once documents are in, and then your home search itself.", "<b>तपाईंको समयरेखा।</b> तपाईंको नगद अहिले तयार छ। बाँकी समयरेखा ऋणदाताको पूर्व स्वीकृति हो, जसले कागजातहरू पुगेपछि सामान्यतया एक वा दुई दिन लिन्छ, र त्यसपछि तपाईंको घर खोजी आफैँ।");
     } else {
-      tl = "<b>Your timeline.</b> Add the amount you can save each month in the form, and this plan will turn your cash gap into a target month.";
+      tl = tx("<b>Your timeline.</b> Add the amount you can save each month in the form, and this plan will turn your cash gap into a target month.", "<b>तपाईंको समयरेखा।</b> फारममा तपाईंले हरेक महिना बचत गर्न सक्ने रकम थप्नुहोस्, र यो योजनाले तपाईंको नगद अभावलाई लक्षित महिनामा बदल्नेछ।");
     }
     $("saveTimeline").innerHTML = tl;
   }
@@ -1126,8 +1138,267 @@
     });
   });
 
+  window.__hbrcRender = render;
   render();
   renderSavedList();
+})();
+</script>
+<script>
+(function(){
+  var FRAG = [
+    ["See what you can buy, what it costs each month, and what cash you need to get there.", "तपाईं के किन्न सक्नुहुन्छ, हरेक महिना कति खर्च लाग्छ, र त्यहाँ पुग्न कति नगद चाहिन्छ हेर्नुहोस्।"],
+    ["Enter your income, debts, credit score, and savings once. This planner works out the home price you likely qualify for, the true monthly payment, and the cash needed to close, then compares Conventional, FHA, and Michigan MSHDA side by side and points to the best fit for your situation.", "तपाईंको आम्दानी, ऋण, क्रेडिट स्कोर, र बचत एक पटक भर्नुहोस्। यो योजनाकारले तपाईं सम्भवतः योग्य हुने घरको मूल्य, वास्तविक मासिक भुक्तानी, र समापन गर्न चाहिने नगद निकाल्छ, त्यसपछि कन्भेन्सनल, FHA, र मिचिगन MSHDA लाई सँगसँगै तुलना गरी तपाईंको अवस्थाका लागि सबैभन्दा उपयुक्त देखाउँछ।"],
+    ["Home Affordability Calculator", "घर खरिद क्षमता क्यालकुलेटर"],
+    ["West Michigan buyers", "पश्चिम मिचिगनका खरिदकर्ताहरूका लागि बनाइएको"],
+    ["not a lender preapproval", "ऋणदाताको पूर्व स्वीकृति होइन"],
+    ["Rates snapshot ", "ब्याजदर झलक: "],
+    ["Estimates only ", "अनुमान मात्र, "],
+    ["Built for ", ""],
+    ["Starting assumption below. Edit it in the form to test any rate.", "तलको सुरुवाती अनुमान। कुनै पनि ब्याजदर परीक्षण गर्न फारममा सम्पादन गर्नुहोस्।"],
+    ["The most you can borrow with FHA on a single family home here.", "यहाँ एकल परिवार घरमा FHA बाट तपाईंले लिन सक्ने अधिकतम।"],
+    ["The ceiling for a standard Conventional loan in 2026.", "2026 मा मानक कन्भेन्सनल ऋणको अधिकतम सीमा।"],
+    ["MI 10K down payment help, no monthly payment, with a price limit of $566,355.", "MI 10K डाउन पेमेन्ट सहायता, मासिक भुक्तानी बिना, $566,355 को मूल्य सीमासहित।"],
+    ["FHA loan limit, Kent County", "FHA ऋण सीमा, Kent County"],
+    ["30 year fixed rate", "30 वर्षे स्थिर ब्याजदर"],
+    ["Conforming loan limit", "कन्फर्मिङ ऋण सीमा"],
+    ["MSHDA help available", "MSHDA सहायता उपलब्ध छ"],
+    ["Results update as you type", "तपाईंले टाइप गर्दै जाँदा नतिजा अद्यावधिक हुन्छ"],
+    ["Use your best honest estimates. Fields marked ", "तपाईंका सबैभन्दा इमानदार अनुमानहरू प्रयोग गर्नुहोस्। "],
+    [" are required to calculate your estimates. When you tap Calculate, your results are shared with Karan Tamang so he can follow up with you.", " चिन्ह लगाइएका क्षेत्रहरू तपाईंको अनुमान गणना गर्न आवश्यक छन्। तपाईंले गणना गर्नुहोस् थिच्दा, तपाईंको नतिजा Karan Tamang सँग साझा हुन्छ ताकि उनले तपाईंसँग सम्पर्क गर्न सकून्।"],
+    ["Your full name", "तपाईंको पूरा नाम"],
+    ["Household income per year", "वार्षिक घरायसी आम्दानी"],
+    ["Monthly debts", "मासिक ऋण"],
+    ["Cash saved for the home", "घरका लागि बचत गरेको नगद"],
+    ["You can save per month", "तपाईं हरेक महिना बचत गर्न सक्नुहुन्छ"],
+    ["Home price you have in mind", "तपाईंको मनमा भएको घरको मूल्य"],
+    ["Credit score", "क्रेडिट स्कोर"],
+    ["Please enter your full name.", "कृपया तपाईंको पूरा नाम भर्नुहोस्।"],
+    ["Please enter your household income per year.", "कृपया तपाईंको वार्षिक घरायसी आम्दानी भर्नुहोस्।"],
+    ["Please enter your monthly debts. Enter 0 if you have none.", "कृपया तपाईंको मासिक ऋण भर्नुहोस्। नभए 0 भर्नुहोस्।"],
+    ["Please enter the cash you have saved for the home. Enter 0 if you have not saved yet.", "कृपया तपाईंले घरका लागि बचत गरेको नगद भर्नुहोस्। अझै बचत गर्नुभएको छैन भने 0 भर्नुहोस्।"],
+    ["Please enter how much you can save per month. Enter 0 if you cannot save right now.", "कृपया तपाईं हरेक महिना कति बचत गर्न सक्नुहुन्छ भर्नुहोस्। अहिले बचत गर्न सक्नुहुन्न भने 0 भर्नुहोस्।"],
+    ["Please enter the home price you have in mind, or drag the slider above.", "कृपया तपाईंको मनमा भएको घरको मूल्य भर्नुहोस्, वा माथिको स्लाइडर तान्नुहोस्।"],
+    ["Used to label a saved report and to head your copied summary.", "सेभ गरिएको रिपोर्टमा नाम दिन र तपाईंको कपि गरिएको सारांशको शीर्षकमा प्रयोग हुन्छ।"],
+    ["Gross pay for everyone who will be on the loan, before taxes.", "ऋणमा हुने सबैको करअघिको कुल तलब।"],
+    ["Car payments, credit card minimums, student loans, and other loan payments. Do not include rent, utilities, or groceries. Enter 0 if you have none.", "गाडीको किस्ता, क्रेडिट कार्डको न्यूनतम, विद्यार्थी ऋण, र अन्य ऋण भुक्तानीहरू। भाडा, उपयोगिता, वा किराना सामेल नगर्नुहोस्। नभए 0 भर्नुहोस्।"],
+    ["Money you could put toward the down payment and closing costs. Keep a separate emergency cushion if you can. Enter 0 if you have not saved yet.", "डाउन पेमेन्ट र समापन खर्चतर्फ राख्न सक्ने पैसा। सक्नुहुन्छ भने छुट्टै आपतकालीन रकम राख्नुहोस्। अझै बचत गर्नुभएको छैन भने 0 भर्नुहोस्।"],
+    ["Used to show how long it takes to close any cash gap. Enter 0 if you cannot save right now.", "कुनै पनि नगद अभाव पूरा गर्न कति समय लाग्छ देखाउन प्रयोग हुन्छ। अहिले बचत गर्न सक्नुहुन्न भने 0 भर्नुहोस्।"],
+    ["Type a price, or drag the slider to fill one in. Your likely maximum for each program is shown below.", "मूल्य टाइप गर्नुहोस्, वा भर्न स्लाइडर तान्नुहोस्। हरेक कार्यक्रमका लागि तपाईंको सम्भावित अधिकतम तल देखाइएको छ।"],
+    ["Have you owned a home in the last 3 years?", "के तपाईंले पछिल्ला 3 वर्षमा घरको स्वामित्व लिनुभएको थियो?"],
+    ["No, I am a first time buyer", "होइन, म पहिलो पटक खरिदकर्ता हुँ"],
+    ["Yes, I have owned", "हो, मैले स्वामित्व लिएको छु"],
+    ["First time buyers can put 3 percent down with Conventional and can use MSHDA help.", "पहिलो पटक खरिदकर्ताहरूले कन्भेन्सनलमा 3 प्रतिशत डाउन राख्न र MSHDA सहायता प्रयोग गर्न सक्छन्।"],
+    ["Adjust the assumptions", "अनुमानहरू मिलाउनुहोस्"],
+    ["FHA is modeled a quarter point lower, which is typical. MSHDA rates are set by the program and change daily.", "FHA लाई सामान्य रूपमा चौथाइ अङ्क कममा मोडेल गरिएको छ। MSHDA ब्याजदर कार्यक्रमले तोक्छ र दैनिक बदलिन्छ।"],
+    ["A Grand Rapids area planning figure with the homestead exemption. Your actual millage will differ by address.", "होमस्टेड छुटसहितको Grand Rapids क्षेत्रको योजना तथ्याङ्क। तपाईंको वास्तविक कर दर ठेगाना अनुसार फरक हुनेछ।"],
+    ["Lender fees, title, appraisal, and prepaid taxes and insurance. Two to five percent is the normal range.", "ऋणदाता शुल्क, टाइटल, मूल्याङ्कन, र अग्रिम कर तथा बीमा। दुईदेखि पाँच प्रतिशत सामान्य दायरा हो।"],
+    ["Property taxes per year", "वार्षिक सम्पत्ति कर"],
+    ["Interest rate", "ब्याजदर"],
+    ["Your results are shared with Karan Tamang when you tap Calculate.", "तपाईंले गणना गर्नुहोस् थिच्दा तपाईंको नतिजा Karan Tamang सँग साझा हुन्छ।"],
+    ["Best fit for you right now", "अहिले तपाईंका लागि सबैभन्दा उपयुक्त"],
+    ["You likely qualify up to", "तपाईं सम्भवतः यतिसम्म योग्य हुनुहुन्छ"],
+    ["Monthly payment at your price", "तपाईंको मूल्यमा मासिक भुक्तानी"],
+    ["Includes taxes, insurance, and mortgage insurance where it applies.", "लागू हुने ठाउँमा कर, बीमा, र धितो बीमा समावेश छ।"],
+    [" opens your email app addressed to Karan at karan.tamang@city2shore.com so you can write to him directly. Your results are already shared with Karan when you tap Calculate in the form. ", " ले karan.tamang@city2shore.com मा Karan लाई सम्बोधन गरी तपाईंको इमेल एप खोल्छ ताकि तपाईंले उनलाई सीधै लेख्न सक्नुहोस्। तपाईंले फारममा गणना गर्नुहोस् थिच्दा तपाईंको नतिजा पहिले नै Karan सँग साझा भइसकेको हुन्छ। "],
+    [" puts the full summary on your clipboard for your own records. ", " ले तपाईंको आफ्नै रेकर्डका लागि पूरा सारांश तपाईंको क्लिपबोर्डमा राख्छ। "],
+    [" keeps this report on this device only, under your full name above. It is not uploaded, and no one else can open it from another device.", " ले यो रिपोर्ट यो डिभाइसमा मात्र, माथिको तपाईंको पूरा नाममा राख्छ। यो अपलोड हुँदैन, र अरू कसैले अर्को डिभाइसबाट खोल्न सक्दैन।"],
+    ["Send Email", "इमेल पठाउनुहोस्"],
+    ["Save Report", "रिपोर्ट सेभ गर्नुहोस्"],
+    ["Copy summary", "सारांश कपि गर्नुहोस्"],
+    ["Your readiness score", "तपाईंको तयारी स्कोर"],
+    ["A guide, not a grade", "यो मार्गदर्शन हो, ग्रेड होइन"],
+    ["Saved reports", "सेभ गरिएका रिपोर्टहरू"],
+    ["This device only", "यो डिभाइसमा मात्र"],
+    ["Reports you save stay on this phone or computer only. They are not sent anywhere and cannot be opened from another device. Load one to bring its numbers back into the calculator, or delete it when you no longer need it.", "तपाईंले सेभ गर्ने रिपोर्टहरू यो फोन वा कम्प्युटरमा मात्र रहन्छन्। तिनीहरू कतै पठाइँदैनन् र अर्को डिभाइसबाट खोल्न सकिँदैन। एउटा लोड गरी त्यसका तथ्याङ्कहरू क्यालकुलेटरमा फिर्ता ल्याउनुहोस्, वा नचाहिँदा मेटाउनुहोस्।"],
+    ["No saved reports yet. Enter your full name above, then tap Save Report.", "अझै कुनै सेभ गरिएका रिपोर्टहरू छैनन्। माथि तपाईंको पूरा नाम भर्नुहोस्, त्यसपछि रिपोर्ट सेभ गर्नुहोस् थिच्नुहोस्।"],
+    ["Compare your three options at your price", "तपाईंको मूल्यमा तपाईंका तीन विकल्प तुलना गर्नुहोस्"],
+    ["Same home, same income, three different ways to buy it. Watch the cash needed and the monthly payment move, and notice what each program asks of your credit score.", "एउटै घर, एउटै आम्दानी, किन्ने तीन फरक तरिका। चाहिने नगद र मासिक भुक्तानी कसरी बदलिन्छ हेर्नुहोस्, र हरेक कार्यक्रमले तपाईंको क्रेडिट स्कोरबाट के माग्छ ध्यान दिनुहोस्।"],
+    ["The full picture for your best fit", "तपाईंको सबैभन्दा उपयुक्तको पूरा विवरण"],
+    ["Every dollar of the monthly payment and every dollar of cash to close, itemized. Pick any program above to see its detail here.", "मासिक भुक्तानीको हरेक डलर र समापन नगदको हरेक डलर, विस्तृत रूपमा। यहाँ त्यसको विवरण हेर्न माथिको कुनै पनि कार्यक्रम छान्नुहोस्।"],
+    ["Monthly payment breakdown", "मासिक भुक्तानी विवरण"],
+    ["Cash to close, itemized", "समापन नगद, विस्तृत"],
+    ["Your plan to get ready", "तयार हुने तपाईंको योजना"],
+    ["Built from your numbers, in the order that moves you fastest. Do the first step first.", "तपाईंको तथ्याङ्कबाट बनेको, तपाईंलाई सबैभन्दा छिटो अघि बढाउने क्रममा। पहिलो चरण पहिले गर्नुहोस्।"],
+    ["Good to know before you choose", "छान्नुअघि जान्न राम्रो"],
+    ["MSHDA, Michigan help", "MSHDA, मिचिगन सहायता"],
+    ["The standard loan, and usually the cheapest over time once your credit is strong.", "मानक ऋण, र तपाईंको क्रेडिट बलियो भएपछि सामान्यतया समयसँगै सबैभन्दा सस्तो।"],
+    ["3 percent down for first time buyers, 5 percent for most others, 20 percent removes mortgage insurance entirely.", "पहिलो पटक खरिदकर्ताहरूका लागि 3 प्रतिशत डाउन, धेरै अरूका लागि 5 प्रतिशत, 20 प्रतिशतले धितो बीमा पूर्ण रूपमा हटाउँछ।"],
+    ["Mortgage insurance can be removed once you reach 20 percent equity. FHA insurance cannot, unless you refinance.", "तपाईं 20 प्रतिशत इक्विटीमा पुगेपछि धितो बीमा हटाउन सकिन्छ। FHA बीमा सकिँदैन, तपाईंले पुनर्वित्त नगरेसम्म।"],
+    ["Needs a credit score of 620 or higher with most lenders, and rewards scores above 740 with the best pricing.", "धेरैजसो ऋणदाताहरूसँग 620 वा माथिको क्रेडिट स्कोर चाहिन्छ, र 740 माथिका स्कोरलाई सबैभन्दा राम्रो मूल्यले पुरस्कृत गर्छ।"],
+    ["Loan limit of $832,750 in 2026.", "2026 मा $832,750 को ऋण सीमा।"],
+    ["The flexible loan, built for buyers whose credit or savings are still catching up.", "लचिलो ऋण, क्रेडिट वा बचत अझै बन्दै गरेका खरिदकर्ताहरूका लागि बनाइएको।"],
+    ["3.5 percent down with a score of 580 or higher. Scores of 500 to 579 need 10 percent down.", "580 वा माथिको स्कोरमा 3.5 प्रतिशत डाउन। 500 देखि 579 का स्कोरलाई 10 प्रतिशत डाउन चाहिन्छ।"],
+    ["Allows higher debts relative to income than Conventional, up to about 56.9 percent with strong compensating factors.", "कन्भेन्सनलभन्दा आम्दानीको तुलनामा बढी ऋण अनुमति दिन्छ, बलियो पूरक कारकहरूसहित करिब 56.9 प्रतिशतसम्म।"],
+    ["Adds an upfront mortgage insurance premium of 1.75 percent, rolled into the loan, plus about 0.55 percent per year.", "ऋणमा जोडिने 1.75 प्रतिशतको अग्रिम धितो बीमा प्रिमियम थप्छ, साथै वार्षिक करिब 0.55 प्रतिशत।"],
+    ["Kent County loan limit of $541,287. The home must pass an FHA appraisal with health and safety checks.", "Kent County को $541,287 ऋण सीमा। घरले स्वास्थ्य र सुरक्षा जाँचसहितको FHA मूल्याङ्कन पास गर्नुपर्छ।"],
+    ["State help for first time buyers, and for repeat buyers in targeted areas, through participating lenders.", "सहभागी ऋणदाताहरूमार्फत पहिलो पटक खरिदकर्ताहरूका लागि, र लक्षित क्षेत्रहरूमा दोहोर्‍याएर किन्नेहरूका लागि राज्य सहायता।"],
+    ["MI 10K provides up to $10,000 toward down payment and closing costs, with no monthly payment.", "MI 10K ले डाउन पेमेन्ट र समापन खर्चतर्फ $10,000 सम्म दिन्छ, मासिक भुक्तानी बिना।"],
+    ["The help is a second loan with zero interest, repaid when you sell, refinance, or pay off the first loan. It is not forgiven.", "यो सहायता शून्य ब्याजको दोस्रो ऋण हो, तपाईंले बेच्दा, पुनर्वित्त गर्दा, वा पहिलो ऋण तिर्दा तिर्नुपर्छ। यो माफ हुँदैन।"],
+    ["Needs a credit score of 640 or higher, a home price of $566,355 or less, and household income within MSHDA limits for your county and household size.", "640 वा माथिको क्रेडिट स्कोर, $566,355 वा कमको घर मूल्य, र तपाईंको काउन्टी र घरको आकारका लागि MSHDA सीमाभित्रको घरायसी आम्दानी चाहिन्छ।"],
+    ["You bring at least 1 percent of the price from your own funds, and you complete a homebuyer education course.", "तपाईंले आफ्नै रकमबाट मूल्यको कम्तीमा 1 प्रतिशत ल्याउनुहुन्छ, र घर खरिदकर्ता शिक्षा कोर्स पूरा गर्नुहुन्छ।"],
+    ["Ready to talk through your numbers?", "तपाईंको तथ्याङ्कबारे कुरा गर्न तयार हुनुहुन्छ?"],
+    ["Karan Tamang, REALTOR® with City2Shore Foundations, can walk this plan with you, connect you with a local lender for a real preapproval, and start watching for homes that fit your price.", "City2Shore Foundations का REALTOR® Karan Tamang ले यो योजना तपाईंसँगै हेर्न, वास्तविक पूर्व स्वीकृतिका लागि स्थानीय ऋणदातासँग जोड्न, र तपाईंको मूल्यमा मिल्ने घरहरू हेर्न सुरु गर्न सक्छन्।"],
+    ["How to read this page: every figure is an estimate for planning only, based on the rate and cost assumptions shown in the form and program rules as of November 2026. It is not a loan offer, a preapproval, or financial advice. Your actual rate, payment, mortgage insurance, taxes, and cash to close will be set by your lender and the specific home you buy. MSHDA income limits, rates, and funding change, so confirm current terms with a participating MSHDA lender before you rely on them.", "यो पृष्ठ कसरी पढ्ने: हरेक तथ्याङ्क योजनाका लागि मात्र अनुमान हो, फारममा देखाइएका ब्याजदर र खर्च अनुमानहरू र November 2026 सम्मका कार्यक्रम नियमहरूमा आधारित। यो ऋण प्रस्ताव, पूर्व स्वीकृति, वा वित्तीय सल्लाह होइन। तपाईंको वास्तविक ब्याजदर, भुक्तानी, धितो बीमा, कर, र समापन नगद तपाईंको ऋणदाता र तपाईंले किन्ने निश्चित घरले तोक्नेछ। MSHDA आम्दानी सीमा, ब्याजदर, र कोष बदलिन्छ, त्यसैले भर पर्नुअघि सहभागी MSHDA ऋणदातासँग हालका सर्तहरू पुष्टि गर्नुहोस्।"],
+    ["Lowest long term cost when credit is strong. Mortgage insurance can fall away at 20 percent equity.", "क्रेडिट बलियो हुँदा सबैभन्दा कम दीर्घकालीन लागत। धितो बीमा 20 प्रतिशत इक्विटीमा हट्न सक्छ।"],
+    ["The flexible path. Lower credit scores and higher debts can still qualify.", "लचिलो बाटो। कम क्रेडिट स्कोर र बढी ऋण भए पनि योग्य हुन सकिन्छ।"],
+    ["Michigan state help that covers up to $10,000 of your down payment and closing costs.", "तपाईंको डाउन पेमेन्ट र समापन खर्चको $10,000 सम्म धान्ने मिचिगन राज्य सहायता।"],
+    ["MSHDA MI Home Loan with MI 10K help", "MI 10K सहायतासहितको MSHDA MI Home Loan"],
+    ["Conventional loan", "कन्भेन्सनल ऋण"],
+    ["FHA loan", "FHA ऋण"],
+    ["Conventional", "कन्भेन्सनल"],
+    ["Best fit", "सबैभन्दा उपयुक्त"],
+    ["Not yet", "अझै होइन"],
+    ["Over budget", "बजेटभन्दा माथि"],
+    ["You qualify", "तपाईं योग्य हुनुहुन्छ"],
+    ["See full detail", "पूरा विवरण हेर्नुहोस्"],
+    ["per month", "प्रति महिना"],
+    ["Down payment (", "डाउन पेमेन्ट ("],
+    ["Loan amount", "ऋण रकम"],
+    ["Rate used", "प्रयोग गरिएको ब्याजदर"],
+    ["Closing costs est.", "समापन खर्च अनुमान"],
+    ["MSHDA help", "MSHDA सहायता"],
+    ["Cash needed to close", "समापन गर्न चाहिने नगद"],
+    [" percent down for first time buyers.", " प्रतिशत डाउन पेमेन्ट पहिलो पटक खरिदकर्ताहरूका लागि।"],
+    [" percent down for repeat buyers.", " प्रतिशत डाउन पेमेन्ट दोहोर्‍याएर किन्नेहरूका लागि।"],
+    ["Mortgage insurance of about ", "करिब "],
+    [" a month, removable at 20 percent equity.", " मासिक धितो बीमा, 20 प्रतिशत इक्विटीमा हटाउन सकिने।"],
+    ["No mortgage insurance at this down payment.", "यो डाउन पेमेन्टमा धितो बीमा छैन।"],
+    ["Debt limit used here: up to ", "यहाँ प्रयोग गरिएको ऋण सीमा: बढीमा "],
+    ["Debt limit used here: ", "यहाँ प्रयोग गरिएको ऋण सीमा: "],
+    [" of gross income. Yours at this price: ", " कुल आम्दानीको। यस मूल्यमा तपाईंको: "],
+    ["You likely qualify up to ", "तपाईं सम्भवतः यतिसम्म योग्य हुनुहुन्छ: "],
+    [" with this program.", " यो कार्यक्रमसँग।"],
+    [" percent down at your credit score.", " प्रतिशत डाउन पेमेन्ट तपाईंको क्रेडिट स्कोरमा।"],
+    ["Upfront mortgage insurance of ", "अग्रिम धितो बीमा "],
+    [" is rolled into the loan, plus about ", " ऋणमा जोडिएको छ, साथै करिब "],
+    [" a month for the life of the loan in most cases.", " मासिक, धेरैजसो अवस्थामा ऋण अवधिभर।"],
+    ["Includes $10,000 of MI 10K help toward down payment and closing costs, with no monthly payment.", "$10,000 को MI 10K सहायता डाउन पेमेन्ट र समापन खर्चतर्फ समावेश छ, मासिक भुक्तानी बिना।"],
+    ["The help is repaid when you sell, refinance, or pay off the loan. It is not a grant.", "तपाईंले बेच्दा, पुनर्वित्त गर्दा, वा ऋण तिर्दा सहायता तिर्नुपर्छ। यो अनुदान होइन।"],
+    ["You bring at least 1 percent of the price yourself, plus a homebuyer education course.", "तपाईंले आफैँ मूल्यको कम्तीमा 1 प्रतिशत ल्याउनुहुन्छ, साथै घर खरिदकर्ता शिक्षा कोर्स।"],
+    ["Needs a score of 620 or higher", "620 वा माथिको स्कोर चाहिन्छ"],
+    ["Needs a score of 640 or higher", "640 वा माथिको स्कोर चाहिन्छ"],
+    ["Needs a score of 500 or higher", "500 वा माथिको स्कोर चाहिन्छ"],
+    ["Above the $832,750 conforming limit", "$832,750 को कन्फर्मिङ सीमाभन्दा माथि"],
+    ["Above the Kent County FHA limit of $541,287", "Kent County को $541,287 FHA सीमाभन्दा माथि"],
+    ["Above the MSHDA price limit of $566,355", "MSHDA को $566,355 मूल्य सीमाभन्दा माथि"],
+    ["For first time buyers, or repeat buyers in targeted areas", "पहिलो पटक खरिदकर्ताहरूका लागि, वा लक्षित क्षेत्रहरूमा दोहोर्‍याएर किन्नेहरूका लागि"],
+    ["Please fill in the required fields: ", "कृपया आवश्यक क्षेत्रहरू भर्नुहोस्: "],
+    [". Your estimates were not calculated or recorded.", "। तपाईंको अनुमान गणना वा रेकर्ड गरिएको थिएन।"],
+    ["Saved. Your results were shared with Karan Tamang.", "सेभ भयो। तपाईंको नतिजा Karan Tamang सँग साझा भयो।"],
+    ["Fill in the required fields marked * in the form first, then tap Save Report.", "पहिले फारममा * चिन्ह लगाइएका आवश्यक क्षेत्रहरू भर्नुहोस्, त्यसपछि रिपोर्ट सेभ गर्नुहोस् थिच्नुहोस्।"],
+    ["Add your full name in the form first, then tap Save Report so the report is filed under that name.", "पहिले फारममा तपाईंको पूरा नाम थप्नुहोस्, त्यसपछि रिपोर्ट सेभ गर्नुहोस् थिच्नुहोस् ताकि रिपोर्ट त्यही नाममा दर्ता होस्।"],
+    ["Fill in the required fields marked * in the form first to build a summary you can copy.", "पहिले फारममा * चिन्ह लगाइएका आवश्यक क्षेत्रहरू भर्नुहोस्, तपाईंले कपि गर्न सक्ने सारांश बनाउन।"],
+    ["Loaded the saved report for ", "सेभ गरिएको रिपोर्ट लोड भयो: "],
+    [". The numbers above now match that report.", "। माथिका तथ्याङ्कहरू अब त्यो रिपोर्टसँग मिल्छन्।"],
+    ["Deleted the saved report for ", "सेभ गरिएको रिपोर्ट मेटियो: "],
+    [" from this device.", " यो डिभाइसबाट।"],
+    [" the report for ", " को रिपोर्ट "],
+    [" on this device only. Find it in Saved reports below.", " यो डिभाइसमा मात्र। तलका सेभ गरिएका रिपोर्टहरूमा हेर्नुहोस्।"],
+    ["Copied. Paste it in a text or email to Karan.", "कपि भयो। Karan लाई टेक्स्ट वा इमेलमा टाँस्नुहोस्।"],
+    ["Copy was blocked by your browser. Please try again.", "तपाईंको ब्राउजरले कपि रोक्यो। कृपया फेरि प्रयास गर्नुहोस्।"],
+    ["Your numbers", "तपाईंको जानकारी"],
+    ["Closing costs estimate", "समापन खर्च अनुमान"],
+    ["Property taxes", "सम्पत्ति कर"],
+    ["Closing costs", "समापन खर्च"],
+    ["Down payment", "डाउन पेमेन्ट"],
+    ["% of price", "% मूल्यको"],
+    [" at $", " — $"],
+    ["Updated", "अद्यावधिक भयो"],
+    ["Delete", "मेटाउनुहोस्"],
+    ["Saved", "सेभ भयो"],
+    ["Load", "लोड गर्नुहोस्"],
+    ["Calculate", "गणना गर्नुहोस्"]
+  ];
+  FRAG.sort(function(a,b){ return b[0].length - a[0].length; });
+  var PH = {
+    "e.g. Alex Johnson": "उदा. Alex Johnson",
+    "e.g. 85,000": "उदा. 85,000",
+    "e.g. 450": "उदा. 450",
+    "e.g. 18,000": "उदा. 18,000",
+    "e.g. 600": "उदा. 600",
+    "e.g. 320,000": "उदा. 320,000"
+  };
+  var originals = new WeakMap();
+  var phOriginals = new WeakMap();
+  var applying = false;
+  function skipParent(node){
+    var p = node.parentNode;
+    if (!p) return true;
+    var tag = p.nodeName;
+    return tag === "SCRIPT" || tag === "STYLE" || tag === "TEXTAREA";
+  }
+  function translateNode(node){
+    var t = node.nodeValue;
+    if (!t || !t.trim()) return;
+    if (!originals.has(node)) originals.set(node, t);
+    var out = t;
+    for (var i = 0; i < FRAG.length; i++){
+      if (out.indexOf(FRAG[i][0]) >= 0) out = out.split(FRAG[i][0]).join(FRAG[i][1]);
+    }
+    if (out !== t) node.nodeValue = out;
+  }
+  function walkTranslate(){
+    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+    var nodes = [];
+    while (walker.nextNode()){ if (!skipParent(walker.currentNode)) nodes.push(walker.currentNode); }
+    for (var i = 0; i < nodes.length; i++) translateNode(nodes[i]);
+    var inputs = document.querySelectorAll("input[placeholder]");
+    for (var j = 0; j < inputs.length; j++){
+      var el = inputs[j];
+      if (!phOriginals.has(el)) phOriginals.set(el, el.getAttribute("placeholder"));
+      var orig = phOriginals.get(el);
+      if (orig && PH[orig]) el.setAttribute("placeholder", PH[orig]);
+    }
+  }
+  function translatedOf(t){
+    var out = t;
+    for (var i = 0; i < FRAG.length; i++){
+      if (out.indexOf(FRAG[i][0]) >= 0) out = out.split(FRAG[i][0]).join(FRAG[i][1]);
+    }
+    return out;
+  }
+  function walkRestore(){
+    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+    var nodes = [];
+    while (walker.nextNode()){ if (!skipParent(walker.currentNode)) nodes.push(walker.currentNode); }
+    for (var i = 0; i < nodes.length; i++){
+      if (originals.has(nodes[i])){
+        var orig = originals.get(nodes[i]);
+        if (nodes[i].nodeValue === translatedOf(orig)) nodes[i].nodeValue = orig;
+      }
+    }
+    var inputs = document.querySelectorAll("input[placeholder]");
+    for (var j = 0; j < inputs.length; j++){
+      if (phOriginals.has(inputs[j])) inputs[j].setAttribute("placeholder", phOriginals.get(inputs[j]));
+    }
+  }
+  function applyLang(){
+    if (window.__lang !== "ne" || applying) return;
+    applying = true;
+    try { walkTranslate(); } catch (e) {}
+    applying = false;
+  }
+  function setLang(l){
+    window.__lang = l;
+    document.documentElement.lang = (l === "ne") ? "ne" : "en";
+    var en = document.getElementById("langEn"), ne = document.getElementById("langNe");
+    if (en) en.setAttribute("aria-pressed", l === "en" ? "true" : "false");
+    if (ne) ne.setAttribute("aria-pressed", l === "ne" ? "true" : "false");
+    if (window.__hbrcRender) window.__hbrcRender();
+    if (l === "ne") applyLang(); else walkRestore();
+  }
+  var enBtn = document.getElementById("langEn"), neBtn = document.getElementById("langNe");
+  if (enBtn) enBtn.addEventListener("click", function(){ setLang("en"); });
+  if (neBtn) neBtn.addEventListener("click", function(){ setLang("ne"); });
+  if (window.MutationObserver){
+    var pending = false;
+    var obs = new MutationObserver(function(){
+      if (window.__lang !== "ne" || applying || pending) return;
+      pending = true;
+      setTimeout(function(){ pending = false; applyLang(); }, 30);
+    });
+    obs.observe(document.body, { childList:true, subtree:true, characterData:true });
+  }
 })();
 </script>
 </body>
