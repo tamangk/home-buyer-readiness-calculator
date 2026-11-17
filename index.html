@@ -65,6 +65,15 @@
   .fhelp{ font-size:13px; color:var(--muted); margin-top:2px; }
   input[type="number"], input[type="text"], select{ width:100%; margin-top:7px; padding:10px 12px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface); color:var(--ink); font:inherit; font-size:16px; }
   input[type="number"]:focus, input[type="text"]:focus, select:focus, input[type="range"]:focus-visible{ outline:3px solid var(--goldSoft); border-color:var(--gold); }
+  .reqMark{ color:var(--red); font-weight:800; }
+  .reqTag{ font-size:11.5px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; color:var(--red); background:var(--redBg); border-radius:999px; padding:2px 8px; white-space:nowrap; }
+  input.fieldInvalid{ border-color:var(--red) !important; outline:3px solid var(--redBg); }
+  .fieldError{ display:none; font-size:13px; font-weight:700; color:var(--red); margin-top:5px; }
+  .fieldError.show{ display:block; }
+  @media (prefers-color-scheme: light){ .fieldError{ color:#8E2B20; } .reqMark{ color:#B03A2E; } }
+  .calcSaved.err{ background:var(--redBg); color:var(--red); }
+  @media (prefers-color-scheme: light){ .calcSaved.err{ color:#8E2B20; } }
+  .emptyPrompt{ border:1px dashed var(--line); border-radius:12px; padding:18px; text-align:center; color:var(--ink2); font-size:14.5px; background:var(--surface2); }
   input[type="range"]{ display:block; width:100%; min-width:0; max-width:100%; margin:10px 0 0; padding:0; accent-color:var(--gold); height:36px; }
   .money{ position:relative; }
   .money span{ position:absolute; left:12px; top:50%; transform:translateY(-38%); color:var(--muted); font-weight:700; pointer-events:none; }
@@ -233,24 +242,27 @@
   <div class="layout">
     <section class="card" aria-labelledby="formTitle">
       <div class="cardHead"><h2 id="formTitle">Your numbers</h2><span class="hint">Results update as you type</span></div>
-      <p class="sub">Use your best honest estimates. When you tap Calculate, your results are shared with Karan Tamang so he can follow up with you.</p>
+      <p class="sub">Use your best honest estimates. Fields marked <span class="reqMark" aria-hidden="true">*</span> are required to calculate your estimates. When you tap Calculate, your results are shared with Karan Tamang so he can follow up with you.</p>
 
       <label class="field">
-        <span class="flabel">Client name</span>
-        <input type="text" id="inClientName" placeholder="e.g. Alex Johnson" autocomplete="name" />
+        <span class="flabel"><span>Your full name <span class="reqMark" aria-hidden="true">*</span></span> <span class="reqTag">Required</span></span>
+        <input type="text" id="inClientName" placeholder="e.g. Alex Johnson" autocomplete="name" required aria-required="true" aria-describedby="errClientName" />
+        <span class="fieldError" id="errClientName" role="alert">Please enter your full name.</span>
         <span class="fhelp">Used to label a saved report and to head your copied summary.</span>
       </label>
 
       <label class="field">
-        <span class="flabel">Household income per year <output id="oIncome">$85,000</output></span>
-        <span class="money"><span>$</span><input type="number" id="inIncome" value="85000" min="0" step="1000" inputmode="numeric" /></span>
+        <span class="flabel"><span>Household income per year <span class="reqMark" aria-hidden="true">*</span></span> <span class="reqTag">Required</span> <output id="oIncome">—</output></span>
+        <span class="money"><span>$</span><input type="number" id="inIncome" value="" placeholder="e.g. 85,000" min="1" step="1000" inputmode="numeric" required aria-required="true" aria-describedby="errIncome" /></span>
+        <span class="fieldError" id="errIncome" role="alert">Please enter your household income per year.</span>
         <span class="fhelp">Gross pay for everyone who will be on the loan, before taxes.</span>
       </label>
 
       <label class="field">
-        <span class="flabel">Monthly debts <output id="oDebts">$450</output></span>
-        <span class="money"><span>$</span><input type="number" id="inDebts" value="450" min="0" step="25" inputmode="numeric" /></span>
-        <span class="fhelp">Car payments, credit card minimums, student loans, and other loan payments. Do not include rent, utilities, or groceries.</span>
+        <span class="flabel"><span>Monthly debts <span class="reqMark" aria-hidden="true">*</span></span> <span class="reqTag">Required</span> <output id="oDebts">—</output></span>
+        <span class="money"><span>$</span><input type="number" id="inDebts" value="" placeholder="e.g. 450" min="0" step="25" inputmode="numeric" required aria-required="true" aria-describedby="errDebts" /></span>
+        <span class="fieldError" id="errDebts" role="alert">Please enter your monthly debts. Enter 0 if you have none.</span>
+        <span class="fhelp">Car payments, credit card minimums, student loans, and other loan payments. Do not include rent, utilities, or groceries. Enter 0 if you have none.</span>
       </label>
 
       <label class="field">
@@ -260,22 +272,25 @@
       </label>
 
       <label class="field">
-        <span class="flabel">Cash saved for the home <output id="oSaved">$18,000</output></span>
-        <span class="money"><span>$</span><input type="number" id="inSaved" value="18000" min="0" step="500" inputmode="numeric" /></span>
-        <span class="fhelp">Money you could put toward the down payment and closing costs. Keep a separate emergency cushion if you can.</span>
+        <span class="flabel"><span>Cash saved for the home <span class="reqMark" aria-hidden="true">*</span></span> <span class="reqTag">Required</span> <output id="oSaved">—</output></span>
+        <span class="money"><span>$</span><input type="number" id="inSaved" value="" placeholder="e.g. 18,000" min="0" step="500" inputmode="numeric" required aria-required="true" aria-describedby="errSaved" /></span>
+        <span class="fieldError" id="errSaved" role="alert">Please enter the cash you have saved for the home. Enter 0 if you have not saved yet.</span>
+        <span class="fhelp">Money you could put toward the down payment and closing costs. Keep a separate emergency cushion if you can. Enter 0 if you have not saved yet.</span>
       </label>
 
       <label class="field">
-        <span class="flabel">You can save per month <output id="oSaveMo">$600</output></span>
-        <span class="money"><span>$</span><input type="number" id="inSaveMo" value="600" min="0" step="50" inputmode="numeric" /></span>
-        <span class="fhelp">Used to show how long it takes to close any cash gap.</span>
+        <span class="flabel"><span>You can save per month <span class="reqMark" aria-hidden="true">*</span></span> <span class="reqTag">Required</span> <output id="oSaveMo">—</output></span>
+        <span class="money"><span>$</span><input type="number" id="inSaveMo" value="" placeholder="e.g. 600" min="0" step="50" inputmode="numeric" required aria-required="true" aria-describedby="errSaveMo" /></span>
+        <span class="fieldError" id="errSaveMo" role="alert">Please enter how much you can save per month. Enter 0 if you cannot save right now.</span>
+        <span class="fhelp">Used to show how long it takes to close any cash gap. Enter 0 if you cannot save right now.</span>
       </label>
 
       <label class="field">
-        <span class="flabel">Home price you have in mind <output id="oPrice">$320,000</output></span>
-        <input type="range" id="inPrice" min="100000" max="800000" step="5000" value="320000" aria-label="Target home price" />
-        <span class="money"><span>$</span><input type="number" id="inPriceNum" value="320000" min="0" step="5000" inputmode="numeric" aria-label="Target home price in dollars" /></span>
-        <span class="fhelp">Drag to test different prices. Your likely maximum for each program is shown below.</span>
+        <span class="flabel"><span>Home price you have in mind <span class="reqMark" aria-hidden="true">*</span></span> <span class="reqTag">Required</span> <output id="oPrice">—</output></span>
+        <input type="range" id="inPrice" min="100000" max="800000" step="5000" value="100000" aria-label="Target home price slider. Dragging fills in the price below." />
+        <span class="money"><span>$</span><input type="number" id="inPriceNum" value="" placeholder="e.g. 320,000" min="1" step="5000" inputmode="numeric" aria-label="Target home price in dollars" required aria-required="true" aria-describedby="errPrice" /></span>
+        <span class="fieldError" id="errPrice" role="alert">Please enter the home price you have in mind, or drag the slider above.</span>
+        <span class="fhelp">Type a price, or drag the slider to fill one in. Your likely maximum for each program is shown below.</span>
       </label>
 
       <label class="field">
@@ -331,7 +346,7 @@
             <button class="btnCopy" type="button" id="copyBtn">Copy summary</button>
           </div>
         </div>
-        <p class="shareNote"><b>Send Email</b> opens your email app addressed to Karan at karan.tamang@city2shore.com so you can write to him directly. Your results are already shared with Karan when you tap Calculate in the form. <b>Copy summary</b> puts the full summary on your clipboard for your own records. <b>Save Report</b> keeps this report on this device only, under the client name above. It is not uploaded, and no one else can open it from another device.</p>
+        <p class="shareNote"><b>Send Email</b> opens your email app addressed to Karan at karan.tamang@city2shore.com so you can write to him directly. Your results are already shared with Karan when you tap Calculate in the form. <b>Copy summary</b> puts the full summary on your clipboard for your own records. <b>Save Report</b> keeps this report on this device only, under your full name above. It is not uploaded, and no one else can open it from another device.</p>
         <div class="actionStatus" id="actionStatus" role="status" aria-live="polite"></div>
       </section>
 
@@ -563,8 +578,88 @@
     return { pick:pick, why:why, order:order };
   }
 
+  var REQUIRED_FIELDS = [
+    { id:"inClientName", err:"errClientName", label:"Your full name", text:true },
+    { id:"inIncome", err:"errIncome", label:"Household income per year", positive:true },
+    { id:"inDebts", err:"errDebts", label:"Monthly debts", positive:false },
+    { id:"inSaved", err:"errSaved", label:"Cash saved for the home", positive:false },
+    { id:"inSaveMo", err:"errSaveMo", label:"You can save per month", positive:false },
+    { id:"inPriceNum", err:"errPrice", label:"Home price you have in mind", positive:true }
+  ];
+  function missingRequired(){
+    var missing = [];
+    REQUIRED_FIELDS.forEach(function(f){
+      var el = $(f.id);
+      var raw = el && el.value != null ? String(el.value).trim() : "";
+      if (raw === ""){ missing.push(f); return; }
+      if (f.text) return;
+      var v = parseFloat(raw);
+      if (isNaN(v) || v < 0 || (f.positive && v <= 0)) missing.push(f);
+    });
+    return missing;
+  }
+  function isMissingId(missing, id){
+    for (var i = 0; i < missing.length; i++) if (missing[i].id === id) return true;
+    return false;
+  }
+  function paintRequiredErrors(missing, showAll){
+    REQUIRED_FIELDS.forEach(function(f){
+      var el = $(f.id), err = $(f.err), bad = isMissingId(missing, f.id);
+      if (bad && showAll){
+        if (el) el.classList.add("fieldInvalid");
+        if (err) err.classList.add("show");
+      } else if (!bad){
+        if (el) el.classList.remove("fieldInvalid");
+        if (err) err.classList.remove("show");
+      }
+    });
+  }
+  function renderIncomplete(missing, inp){
+    $("oIncome").textContent = isMissingId(missing, "inIncome") ? "—" : money(inp.income);
+    $("oDebts").textContent = isMissingId(missing, "inDebts") ? "—" : money(inp.debts);
+    $("oCredit").textContent = inp.credit;
+    $("creditWord").textContent = creditWordFn(inp.credit);
+    $("oSaved").textContent = isMissingId(missing, "inSaved") ? "—" : money(inp.saved);
+    $("oSaveMo").textContent = isMissingId(missing, "inSaveMo") ? "—" : money(inp.saveMo);
+    $("oPrice").textContent = isMissingId(missing, "inPriceNum") ? "—" : money(inp.price);
+    $("oRate").textContent = inp.rate.toFixed(2) + "%";
+    $("oTax").textContent = inp.tax.toFixed(2) + "% of price";
+    $("oClose").textContent = inp.close.toFixed(1) + "% of price";
+    $("bestName").textContent = "Your estimate will appear here";
+    $("bestWhy").textContent = "Fill in the required fields marked * in the form, then tap Calculate. Nothing is recorded until you do.";
+    $("vMax").textContent = "—";
+    $("vMaxNote").textContent = "";
+    $("vPay").textContent = "—";
+    $("vCash").textContent = "—";
+    $("vCashNote").textContent = "";
+    var gapEl = $("gapLine");
+    gapEl.className = "gapLine gapNo";
+    gapEl.textContent = "Still needed: " + missing.map(function(f){ return f.label; }).join(", ") + ".";
+    $("scoreNum").textContent = "—";
+    $("scoreWord").textContent = "Waiting for your numbers";
+    $("scoreSub").textContent = "Complete the required fields to see your readiness score.";
+    $("scoreBar").style.width = "0%";
+    $("factors").innerHTML = '<p class="emptyPrompt">Your score factors will appear once the required fields are complete.</p>';
+    $("compare").innerHTML = '<p class="emptyPrompt" style="grid-column:1/-1">Enter the required fields to compare Conventional, FHA, and MSHDA at your price.</p>';
+    $("detailTitle").textContent = "The full picture for your best fit";
+    $("payBars").innerHTML = '<p class="emptyPrompt">Your monthly payment breakdown will appear here.</p>';
+    $("payLegend").innerHTML = "";
+    $("payRows").innerHTML = "";
+    $("cashRows").innerHTML = "<div><dt>Cash needed to close</dt><dd>—</dd></div>";
+    $("loanFacts").innerHTML = "<b>Loan facts.</b> Complete the required fields to see the loan details for your best fit.";
+    $("steps").innerHTML = '<li><div><b>Enter your numbers</b><p>Fill in the required fields marked *, then tap Calculate to build your plan.</p></div></li>';
+    $("saveTimeline").innerHTML = "<b>Your timeline.</b> Once you enter how much you can save each month and your target price, this plan will show the month your cash to close is ready.";
+  }
+
   function render(){
     var inp = readInputs();
+    var missing = missingRequired();
+    paintRequiredErrors(missing, false);
+    if (missing.length){
+      state.last = null;
+      renderIncomplete(missing, inp);
+      return;
+    }
     $("oIncome").textContent = money(inp.income);
     $("oDebts").textContent = money(inp.debts);
     $("oCredit").textContent = inp.credit;
@@ -785,7 +880,7 @@
   function syncFromRange(){ $("inPriceNum").value = $("inPrice").value; render(); }
   function syncFromNum(){ var v = num("inPriceNum"); if (v >= 100000 && v <= 800000) $("inPrice").value = v; render(); }
 
-  ["inIncome","inDebts","inSaved","inSaveMo"].forEach(function(id){ $(id).addEventListener("input", render); });
+  ["inClientName","inIncome","inDebts","inSaved","inSaveMo"].forEach(function(id){ $(id).addEventListener("input", render); });
   ["inCredit","inRate","inTax","inClose"].forEach(function(id){ $(id).addEventListener("input", render); });
   $("inPrice").addEventListener("input", syncFromRange);
   $("inPriceNum").addEventListener("input", syncFromNum);
@@ -838,6 +933,20 @@
     } catch (e) { /* background save never blocks the results */ }
   }
   $("calcBtn").addEventListener("click", function(){
+    var missing = missingRequired();
+    if (missing.length){
+      paintRequiredErrors(missing, true);
+      render();
+      var errEl = $("calcSaved");
+      errEl.textContent = "Please fill in the required fields: " + missing.map(function(f){ return f.label; }).join(", ") + ". Your estimates were not calculated or recorded.";
+      errEl.className = "calcSaved show err";
+      var first = $(missing[0].id);
+      if (first){
+        first.scrollIntoView({ behavior:"smooth", block:"center" });
+        try { first.focus({ preventScroll:true }); } catch (e) { first.focus(); }
+      }
+      return;
+    }
     render();
     var L = state.last; if (!L) return;
     saveToGoogleForm(L);
@@ -873,7 +982,7 @@
     var score = computeScore(L.res, L.rec, L.inp, L.maxes).total;
     var lines = [
       "Home Buyer Readiness Summary",
-      "Client: " + (name || "Not provided"),
+      "Name: " + (name || "Not provided"),
       "Date: " + new Date().toLocaleDateString("en-US", { year:"numeric", month:"long", day:"numeric" }),
       "",
       "Inputs",
@@ -905,7 +1014,7 @@
     var reports = loadReports();
     var box = $("savedList");
     if (!reports.length){
-      box.innerHTML = '<p class="savedEmpty">No saved reports yet. Enter a client name above, then tap Save Report.</p>';
+      box.innerHTML = '<p class="savedEmpty">No saved reports yet. Enter your full name above, then tap Save Report.</p>';
       return;
     }
     var html = "";
@@ -955,10 +1064,11 @@
     if (removed) showStatus("Deleted the saved report for " + removed.name + " from this device.", true);
   }
   $("saveBtn").addEventListener("click", function(){
-    var L = state.last; if (!L) return;
+    var L = state.last;
+    if (!L){ showStatus("Fill in the required fields marked * in the form first, then tap Save Report.", false); document.getElementById("formTitle").scrollIntoView({ behavior:"smooth", block:"start" }); return; }
     var name = clientName();
     if (!name){
-      showStatus("Add a client name in the form first, then tap Save Report so the report is filed under that name.", false);
+      showStatus("Add your full name in the form first, then tap Save Report so the report is filed under that name.", false);
       $("inClientName").focus();
       document.getElementById("formTitle").scrollIntoView({ behavior:"smooth", block:"start" });
       return;
@@ -1005,7 +1115,8 @@
     } else { fallback(); }
   }
   $("copyBtn").addEventListener("click", function(){
-    var L = state.last; if (!L) return;
+    var L = state.last;
+    if (!L){ showStatus("Fill in the required fields marked * in the form first to build a summary you can copy.", false); return; }
     var lines = buildSummary(clientName(), L);
     var btn = this;
     copyText(lines, function(ok){
