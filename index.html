@@ -38,11 +38,12 @@
   h1,h2,h3{ font-family:"DM Serif Display",Georgia,serif; font-weight:400; line-height:1.12; margin:0; }
   p{ margin:0; }
   .hero{ background:var(--navy); color:#F4EFE3; border-radius:0 0 22px 22px; padding:34px 0 30px; margin:0; }
-  .heroInner{ max-width:1180px; margin:0 auto; padding:0 18px; }
-  .hero h1{ font-size:clamp(32px,5.2vw,52px); max-width:14em; }
+  .heroInner{ max-width:1180px; margin:0 auto; padding:0 18px; text-align:left; }
+  .hero h1{ font-size:clamp(32px,5.2vw,52px); max-width:14em; margin-left:auto; margin-right:auto; text-align:center; color:var(--gold); }
   .hero h1 em{ font-style:normal; color:var(--gold); }
-  .heroSub{ margin-top:14px; max-width:44em; color:#D8DEE8; font-size:17px; }
-  .heroMeta{ margin-top:18px; display:flex; flex-wrap:wrap; gap:8px; }
+  .heroTag{ margin-top:12px; max-width:44em; color:#EDE7D6; font-size:clamp(18px,2.4vw,22px); font-weight:600; line-height:1.35; }
+  .heroSub{ margin-top:12px; max-width:44em; color:#D8DEE8; font-size:17px; }
+  .heroMeta{ margin-top:18px; display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-start; }
   .chip{ display:inline-flex; align-items:center; gap:7px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:#EDE7D6; border-radius:999px; padding:7px 12px; font-size:13.5px; font-weight:600; }
   .chip b{ color:var(--gold); font-weight:800; }
   .facts{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:22px 0 0; }
@@ -220,7 +221,8 @@
 <body>
 <header class="hero">
   <div class="heroInner">
-    <h1>See what you can buy, what it costs each month, and <em>what cash you need</em> to get there.</h1>
+    <h1>Home Affordability Calculator</h1>
+    <p class="heroTag">See what you can buy, what it costs each month, and what cash you need to get there.</p>
     <p class="heroSub">Enter your income, debts, credit score, and savings once. This planner works out the home price you likely qualify for, the true monthly payment, and the cash needed to close, then compares Conventional, FHA, and Michigan MSHDA side by side and points to the best fit for your situation.</p>
     <div class="heroMeta">
       <span class="chip">Built for <b>West Michigan buyers</b></span>
