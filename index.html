@@ -1,0 +1,989 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<link rel="icon" href="data:," />
+<title>Home Buyer Readiness Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  button, [role="button"], select, summary, input:not([type="checkbox"], [type="radio"]) { min-height: 2.25rem; }
+  * { box-sizing: border-box; }
+  :root{
+    --bg:#F6F2EA; --surface:#FFFEFA; --surface2:#EFE9DC; --ink:#16283E; --ink2:#43536A; --muted:#6B7789;
+    --line:#DCD3BF; --navy:#122A46; --navy2:#1B3A5E; --gold:#B08A3E; --goldSoft:#F0E4C8; --goldInk:#7A5C1E;
+    --green:#1F7A4D; --greenBg:#E2F2E7; --amber:#9A6B12; --amberBg:#FBF0D3; --red:#B03A2E; --redBg:#FBE7E3;
+    --blueBg:#E6EDF6; --shadow:0 10px 30px rgba(18,42,70,.10); --radius:14px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0D1520; --surface:#16222F; --surface2:#1C2B3D; --ink:#EFF3F8; --ink2:#B9C5D4; --muted:#93A1B3;
+      --line:#2E4157; --navy:#0B1C30; --navy2:#132A47; --gold:#D3AC5F; --goldSoft:#2E2A1A; --goldInk:#E5C87E;
+      --green:#5CC98A; --greenBg:#173528; --amber:#E8BC5A; --amberBg:#332B12; --red:#F08A7D; --redBg:#3A201C;
+      --blueBg:#1D3049; --shadow:0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  html{ scroll-behavior:smooth; overflow-x:hidden; overflow-x:clip; width:100%; -webkit-text-size-adjust:100%; text-size-adjust:100%; }
+  body{ margin:0; background:var(--bg); color:var(--ink); font-family:"Public Sans",system-ui,sans-serif; font-size:16px; line-height:1.55; overflow-x:hidden; overflow-x:clip; overscroll-behavior-x:none; width:100%; max-width:100%; position:relative; }
+  img, svg, video{ max-width:100%; }
+  input, select, textarea, button{ max-width:100%; }
+  .sr{ position:absolute !important; width:1px !important; height:1px !important; padding:0 !important; margin:-1px !important; overflow:hidden !important; clip:rect(0 0 0 0) !important; clip-path:inset(50%) !important; white-space:nowrap !important; border:0 !important; }
+  .layout > *, .compare > *, .detailGrid > *, .notesGrid > *, .facts > *, .verdictGrid > *, .seg > *, .shareActions > *, .shareActions .row2 > *, .sendPanel .row2 > *, .contact > *, .scoreHead > *, .cardHead > *, .flabel > *, dl.rows > div > *{ min-width:0; }
+  .cardHead{ flex-wrap:wrap; }
+  .shareNote, .fineprint, .heroSub, .bestWhy, .sub, .fhelp{ overflow-wrap:break-word; }
+  .wrap{ max-width:1180px; width:100%; margin:0 auto; padding:0 18px 56px; }
+  h1,h2,h3{ font-family:"DM Serif Display",Georgia,serif; font-weight:400; line-height:1.12; margin:0; }
+  p{ margin:0; }
+  .hero{ background:var(--navy); color:#F4EFE3; border-radius:0 0 22px 22px; padding:34px 0 30px; margin:0; }
+  .heroInner{ max-width:1180px; margin:0 auto; padding:0 18px; }
+  .hero h1{ font-size:clamp(32px,5.2vw,52px); max-width:14em; }
+  .hero h1 em{ font-style:normal; color:var(--gold); }
+  .heroSub{ margin-top:14px; max-width:44em; color:#D8DEE8; font-size:17px; }
+  .heroMeta{ margin-top:18px; display:flex; flex-wrap:wrap; gap:8px; }
+  .chip{ display:inline-flex; align-items:center; gap:7px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18); color:#EDE7D6; border-radius:999px; padding:7px 12px; font-size:13.5px; font-weight:600; }
+  .chip b{ color:var(--gold); font-weight:800; }
+  .facts{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:22px 0 0; }
+  .fact{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); }
+  .fact .k{ font-size:12.5px; font-weight:800; letter-spacing:.07em; text-transform:uppercase; color:var(--goldInk); }
+  .fact .v{ font-family:"DM Serif Display",serif; font-size:27px; margin-top:4px; }
+  .fact .n{ font-size:13.5px; color:var(--ink2); margin-top:3px; }
+  .layout{ display:grid; grid-template-columns:400px 1fr; gap:18px; margin-top:18px; align-items:start; }
+  .card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:20px; }
+  .card + .card{ margin-top:18px; }
+  .cardHead{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:6px; }
+  .cardHead h2{ font-size:24px; }
+  .cardHead .hint{ font-size:13px; color:var(--muted); text-align:right; }
+  .sub{ color:var(--ink2); font-size:14.5px; margin-bottom:14px; }
+  label.field{ display:block; margin-top:16px; }
+  label.field:first-of-type{ margin-top:4px; }
+  .flabel{ display:flex; flex-wrap:wrap; justify-content:space-between; align-items:baseline; gap:10px; font-weight:700; font-size:14.5px; }
+  .flabel output{ font-weight:800; color:var(--navy2); background:var(--blueBg); border-radius:8px; padding:2px 9px; font-size:14px; white-space:nowrap; }
+  @media (prefers-color-scheme: dark){ .flabel output{ color:var(--ink); } }
+  .fhelp{ font-size:13px; color:var(--muted); margin-top:2px; }
+  input[type="number"], input[type="text"], select{ width:100%; margin-top:7px; padding:10px 12px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface); color:var(--ink); font:inherit; font-size:16px; }
+  input[type="number"]:focus, input[type="text"]:focus, select:focus, input[type="range"]:focus-visible{ outline:3px solid var(--goldSoft); border-color:var(--gold); }
+  input[type="range"]{ display:block; width:100%; min-width:0; max-width:100%; margin:10px 0 0; padding:0; accent-color:var(--gold); height:36px; }
+  .money{ position:relative; }
+  .money span{ position:absolute; left:12px; top:50%; transform:translateY(-38%); color:var(--muted); font-weight:700; pointer-events:none; }
+  .money input{ padding-left:26px; }
+  .seg{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:7px; }
+  .seg button{ border:1.5px solid var(--line); background:var(--surface); color:var(--ink); border-radius:10px; padding:10px 8px; font:inherit; font-weight:700; font-size:14.5px; cursor:pointer; min-height:44px; }
+  .seg button[aria-pressed="true"]{ background:var(--navy); border-color:var(--navy); color:#F4EFE3; }
+  @media (prefers-color-scheme: dark){ .seg button[aria-pressed="true"]{ background:var(--gold); border-color:var(--gold); color:#1B1608; } }
+  details.adv{ margin-top:18px; border-top:1px solid var(--line); padding-top:12px; }
+  details.adv summary{ cursor:pointer; font-weight:700; font-size:14.5px; padding:6px 0; }
+  .verdict{ background:var(--navy); color:#F1EBDB; border:none; }
+  .verdict h2{ color:#fff; }
+  .verdict .sub{ color:#C9D2DF; }
+  .bestTag{ display:inline-block; background:var(--gold); color:#1E1808; font-weight:800; font-size:12.5px; letter-spacing:.06em; text-transform:uppercase; border-radius:999px; padding:5px 11px; }
+  .bestName{ font-family:"DM Serif Display",serif; font-size:31px; color:#fff; margin-top:10px; line-height:1.15; }
+  .bestWhy{ color:#D8DEE8; margin-top:8px; font-size:15px; }
+  .verdictGrid{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:18px; }
+  .vstat{ background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.15); border-radius:12px; padding:13px; }
+  .vstat .k{ font-size:12px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:#C9B271; }
+  .vstat .v{ font-size:23px; font-weight:800; color:#fff; margin-top:3px; }
+  .vstat .n{ font-size:12.5px; color:#BFC9D8; margin-top:2px; }
+  .gapLine{ margin-top:14px; border-radius:12px; padding:13px 15px; font-size:15px; font-weight:600; }
+  .gapOk{ background:var(--greenBg); color:var(--green); }
+  .gapNo{ background:var(--amberBg); color:var(--amber); }
+  @media (prefers-color-scheme: light){ .gapOk{ color:#145C36; } .gapNo{ color:#7A5410; } }
+  .compare{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+  .prog{ border:1.5px solid var(--line); border-radius:var(--radius); padding:18px; background:var(--surface); display:flex; flex-direction:column; }
+  .prog.best{ border-color:var(--gold); box-shadow:0 0 0 3px var(--goldSoft), var(--shadow); }
+  .prog.dim{ opacity:.78; }
+  .progTop{ display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
+  .prog h3{ font-size:21px; }
+  .badge{ font-size:12px; font-weight:800; border-radius:999px; padding:4px 10px; white-space:nowrap; }
+  .bOk{ background:var(--greenBg); color:var(--green); } .bWarn{ background:var(--amberBg); color:var(--amber); } .bNo{ background:var(--redBg); color:var(--red); } .bBest{ background:var(--gold); color:#1E1808; }
+  @media (prefers-color-scheme: light){ .bOk{ color:#145C36; } .bWarn{ color:#7A5410; } .bNo{ color:#8E2B20; } }
+  .prog .tagline{ font-size:13.5px; color:var(--ink2); margin-top:4px; min-height:2.6em; }
+  .bigPay{ margin-top:12px; }
+  .bigPay .amt{ font-family:"DM Serif Display",serif; font-size:34px; }
+  .bigPay .per{ color:var(--muted); font-size:14px; font-weight:600; }
+  dl.rows{ margin:12px 0 0; border-top:1px solid var(--line); }
+  dl.rows > div{ display:flex; justify-content:space-between; gap:10px; padding:7px 0; border-bottom:1px solid var(--line); font-size:14.5px; }
+  dl.rows dt{ color:var(--ink2); } dl.rows dd{ margin:0; font-weight:700; text-align:right; }
+  dl.rows > div.total dt{ color:var(--ink); font-weight:800; } dl.rows > div.total dd{ color:var(--goldInk); font-weight:800; }
+  .prog ul.notes{ margin:12px 0 0; padding:0; list-style:none; font-size:13.5px; color:var(--ink2); display:grid; gap:6px; }
+  .prog ul.notes li{ padding-left:18px; position:relative; }
+  .prog ul.notes li::before{ content:""; position:absolute; left:2px; top:.52em; width:7px; height:7px; border-radius:50%; background:var(--gold); }
+  .prog .pick{ margin-top:auto; padding-top:14px; }
+  .pick button{ width:100%; min-height:44px; border-radius:10px; border:1.5px solid var(--navy); background:transparent; color:var(--ink); font:inherit; font-weight:800; cursor:pointer; }
+  .pick button[aria-pressed="true"]{ background:var(--navy); color:#F4EFE3; }
+  @media (prefers-color-scheme: dark){ .pick button{ border-color:var(--gold); } .pick button[aria-pressed="true"]{ background:var(--gold); color:#1B1608; } }
+  .detailGrid{ display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  .barRow{ margin-top:12px; }
+  .barRow .bl{ display:flex; justify-content:space-between; font-size:14px; font-weight:700; gap:10px; }
+  .barRow .bl span:last-child{ color:var(--muted); font-weight:600; }
+  .bar{ height:12px; border-radius:999px; background:var(--surface2); margin-top:6px; overflow:hidden; display:flex; }
+  .bar i{ display:block; height:100%; }
+  .legend{ display:flex; flex-wrap:wrap; gap:12px; margin-top:12px; font-size:13px; color:var(--ink2); }
+  .legend i{ display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:5px; }
+  .scoreHead{ display:flex; align-items:center; gap:16px; }
+  .scoreNum{ font-family:"DM Serif Display",serif; font-size:52px; line-height:1; }
+  .scoreWord{ font-weight:800; font-size:18px; }
+  .meter{ height:14px; background:var(--surface2); border-radius:999px; overflow:hidden; margin-top:14px; }
+  .meter i{ display:block; height:100%; background:var(--gold); border-radius:999px; transition:width .3s ease; }
+  .factor{ margin-top:14px; }
+  .factor .bl{ display:flex; justify-content:space-between; font-size:14.5px; font-weight:700; }
+  .factor .bl span:last-child{ color:var(--muted); font-weight:600; font-size:13.5px; }
+  .factor .track{ height:9px; background:var(--surface2); border-radius:999px; margin-top:5px; overflow:hidden; }
+  .factor .track i{ display:block; height:100%; background:var(--navy2); }
+  @media (prefers-color-scheme: dark){ .factor .track i{ background:var(--gold); } }
+  .factor p{ font-size:13.5px; color:var(--ink2); margin-top:4px; }
+  ol.steps{ margin:6px 0 0; padding:0; list-style:none; counter-reset:step; display:grid; gap:12px; }
+  ol.steps li{ counter-increment:step; display:flex; gap:13px; align-items:flex-start; background:var(--surface2); border-radius:12px; padding:14px; }
+  ol.steps li::before{ content:counter(step); flex:0 0 30px; width:30px; height:30px; border-radius:50%; background:var(--navy); color:#F4EFE3; font-weight:800; display:flex; align-items:center; justify-content:center; font-size:15px; margin-top:1px; }
+  @media (prefers-color-scheme: dark){ ol.steps li::before{ background:var(--gold); color:#1B1608; } }
+  ol.steps b{ display:block; font-size:15.5px; }
+  ol.steps p{ font-size:14px; color:var(--ink2); }
+  .timeline{ margin-top:14px; border:1px dashed var(--gold); background:var(--goldSoft); border-radius:12px; padding:15px; font-size:15px; }
+  .timeline b{ color:var(--goldInk); }
+  .notesGrid{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+  .noteCard{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px; }
+  .noteCard h3{ font-size:19px; margin-bottom:8px; }
+  .noteCard p, .noteCard li{ font-size:14px; color:var(--ink2); }
+  .noteCard ul{ margin:8px 0 0; padding-left:18px; display:grid; gap:5px; }
+  .contact{ margin-top:18px; background:var(--navy); color:#EDE7D6; border-radius:var(--radius); padding:22px; display:flex; flex-wrap:wrap; gap:16px; align-items:center; justify-content:space-between; }
+  .contact h2{ color:#fff; font-size:24px; }
+  .contact p{ color:#C9D2DF; font-size:14.5px; margin-top:4px; max-width:36em; }
+  .contactBtns{ display:flex; gap:10px; flex-wrap:wrap; }
+  .contactBtns a{ display:inline-flex; align-items:center; min-height:44px; padding:10px 18px; border-radius:10px; font-weight:800; text-decoration:none; font-size:15px; }
+  .btnGold{ background:var(--gold); color:#1E1808; }
+  .btnGhost{ border:1.5px solid rgba(255,255,255,.4); color:#fff; }
+  .copyBtn{ margin-top:14px; width:100%; min-height:44px; border-radius:10px; border:none; background:var(--gold); color:#1E1808; font:inherit; font-weight:800; cursor:pointer; }
+  .shareActions{ display:grid; gap:9px; margin-top:14px; }
+  .shareActions .row2{ display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+  .btnSend{ width:100%; min-height:48px; border-radius:10px; border:none; background:var(--gold); color:#1E1808; font:inherit; font-weight:800; font-size:16px; cursor:pointer; }
+  .btnSave{ width:100%; min-height:44px; border-radius:10px; border:1.5px solid rgba(255,255,255,.55); background:transparent; color:#fff; font:inherit; font-weight:800; cursor:pointer; }
+  .btnCopy{ width:100%; min-height:44px; border-radius:10px; border:1.5px solid rgba(255,255,255,.28); background:rgba(255,255,255,.08); color:#EDE7D6; font:inherit; font-weight:700; cursor:pointer; }
+  .shareNote{ margin-top:10px; font-size:13px; color:#BFC9D8; line-height:1.5; }
+  .sendPanel{ display:none; margin-top:12px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.22); border-radius:12px; padding:14px; }
+  .sendPanel.show{ display:block; }
+  .sendPanel p{ font-size:14px; color:#D8DEE8; line-height:1.55; }
+  .sendPanel p b{ color:#fff; }
+  .sendPanel textarea{ width:100%; margin-top:10px; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); background:var(--surface); color:var(--ink); font:inherit; font-size:16px; line-height:1.5; resize:vertical; }
+  .sendPanel .row2{ display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-top:10px; }
+  .btnMailLink{ display:inline-flex; align-items:center; justify-content:center; text-align:center; min-height:44px; padding:10px 12px; border-radius:10px; background:var(--gold); color:#1E1808; font-weight:800; font-size:15px; text-decoration:none; }
+  @media (max-width:560px){ .sendPanel .row2{ grid-template-columns:1fr; } }
+  .shareNote b{ color:#EDE7D6; }
+  .actionStatus{ margin-top:10px; font-size:14px; font-weight:700; border-radius:10px; padding:10px 12px; display:none; }
+  .actionStatus.show{ display:block; }
+  .actionStatus.ok{ background:var(--greenBg); color:var(--green); }
+  .actionStatus.err{ background:var(--amberBg); color:var(--amber); }
+  @media (prefers-color-scheme: light){ .actionStatus.ok{ color:#145C36; } .actionStatus.err{ color:#7A5410; } }
+  .savedItem{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; border:1px solid var(--line); border-radius:12px; padding:13px 14px; background:var(--surface2); }
+  .savedItem + .savedItem{ margin-top:10px; }
+  .savedItem .meta{ min-width:0; }
+  .savedItem .nm{ font-weight:800; font-size:16px; overflow-wrap:anywhere; }
+  .savedItem .dt{ font-size:13px; color:var(--ink2); margin-top:1px; }
+  .savedItem .acts{ display:flex; gap:8px; flex-wrap:wrap; }
+  .savedItem .acts button{ min-height:40px; padding:8px 14px; border-radius:9px; font:inherit; font-weight:800; font-size:14px; cursor:pointer; }
+  .savedLoad{ background:var(--navy); border:1.5px solid var(--navy); color:#F4EFE3; }
+  @media (prefers-color-scheme: dark){ .savedLoad{ background:var(--gold); border-color:var(--gold); color:#1B1608; } }
+  .savedDel{ background:transparent; border:1.5px solid var(--line); color:var(--ink); }
+  .savedEmpty{ font-size:14.5px; color:var(--ink2); border:1px dashed var(--line); border-radius:12px; padding:16px; text-align:center; }
+  .fineprint{ margin-top:16px; font-size:13px; color:var(--muted); max-width:70em; }
+  .sectionTitle{ margin:30px 0 12px; }
+  .sectionTitle h2{ font-size:28px; }
+  .sectionTitle p{ color:var(--ink2); margin-top:4px; max-width:46em; }
+  @media (max-width:1020px){
+    .facts{ grid-template-columns:repeat(2,1fr); }
+    .layout{ grid-template-columns:1fr; }
+    .compare{ grid-template-columns:1fr; }
+    .notesGrid{ grid-template-columns:1fr; }
+    .detailGrid{ grid-template-columns:1fr; }
+  }
+  @media (max-width:560px){
+    .facts{ grid-template-columns:1fr 1fr; }
+    .fact .v{ font-size:22px; }
+    .verdictGrid{ grid-template-columns:1fr; }
+    .card{ padding:16px; }
+    .hero{ padding:26px 0 24px; }
+  }
+  @media (prefers-reduced-motion: reduce){ html{ scroll-behavior:auto; } .meter i{ transition:none; } }
+  @media print{ .hero{ margin:0; } body{ background:#fff; } }
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="heroInner">
+    <h1>See what you can buy, what it costs each month, and <em>what cash you need</em> to get there.</h1>
+    <p class="heroSub">Enter your income, debts, credit score, and savings once. This planner works out the home price you likely qualify for, the true monthly payment, and the cash needed to close, then compares Conventional, FHA, and Michigan MSHDA side by side and points to the best fit for your situation.</p>
+    <div class="heroMeta">
+      <span class="chip">Built for <b>West Michigan buyers</b></span>
+      <span class="chip">Rates snapshot <b>November 2026</b></span>
+      <span class="chip">Estimates only <b>not a lender preapproval</b></span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="facts" aria-label="Current Michigan program figures">
+    <div class="fact"><div class="k">30 year fixed rate</div><div class="v">7.15%</div><p class="n">Starting assumption below. Edit it in the form to test any rate.</p></div>
+    <div class="fact"><div class="k">FHA loan limit, Kent County</div><div class="v">$541,287</div><p class="n">The most you can borrow with FHA on a single family home here.</p></div>
+    <div class="fact"><div class="k">Conforming loan limit</div><div class="v">$832,750</div><p class="n">The ceiling for a standard Conventional loan in 2026.</p></div>
+    <div class="fact"><div class="k">MSHDA help available</div><div class="v">Up to $10,000</div><p class="n">MI 10K down payment help, no monthly payment, with a price limit of $566,355.</p></div>
+  </div>
+
+  <div class="layout">
+    <section class="card" aria-labelledby="formTitle">
+      <div class="cardHead"><h2 id="formTitle">Your numbers</h2><span class="hint">Results update as you type</span></div>
+      <p class="sub">Use your best honest estimates. Nothing you enter leaves this page until you choose to send it to Karan below.</p>
+
+      <label class="field">
+        <span class="flabel">Client name</span>
+        <input type="text" id="inClientName" placeholder="e.g. Alex Johnson" autocomplete="name" />
+        <span class="fhelp">Used to label a saved report and to head the summary you send to Karan.</span>
+      </label>
+
+      <label class="field">
+        <span class="flabel">Household income per year <output id="oIncome">$85,000</output></span>
+        <span class="money"><span>$</span><input type="number" id="inIncome" value="85000" min="0" step="1000" inputmode="numeric" /></span>
+        <span class="fhelp">Gross pay for everyone who will be on the loan, before taxes.</span>
+      </label>
+
+      <label class="field">
+        <span class="flabel">Monthly debts <output id="oDebts">$450</output></span>
+        <span class="money"><span>$</span><input type="number" id="inDebts" value="450" min="0" step="25" inputmode="numeric" /></span>
+        <span class="fhelp">Car payments, credit card minimums, student loans, and other loan payments. Do not include rent, utilities, or groceries.</span>
+      </label>
+
+      <label class="field">
+        <span class="flabel">Credit score <output id="oCredit">680</output></span>
+        <input type="range" id="inCredit" min="500" max="850" step="5" value="680" aria-label="Credit score" />
+        <span class="fhelp" id="creditWord">Good. Most programs are open to you, and MSHDA is within reach.</span>
+      </label>
+
+      <label class="field">
+        <span class="flabel">Cash saved for the home <output id="oSaved">$18,000</output></span>
+        <span class="money"><span>$</span><input type="number" id="inSaved" value="18000" min="0" step="500" inputmode="numeric" /></span>
+        <span class="fhelp">Money you could put toward the down payment and closing costs. Keep a separate emergency cushion if you can.</span>
+      </label>
+
+      <label class="field">
+        <span class="flabel">You can save per month <output id="oSaveMo">$600</output></span>
+        <span class="money"><span>$</span><input type="number" id="inSaveMo" value="600" min="0" step="50" inputmode="numeric" /></span>
+        <span class="fhelp">Used to show how long it takes to close any cash gap.</span>
+      </label>
+
+      <label class="field">
+        <span class="flabel">Home price you have in mind <output id="oPrice">$320,000</output></span>
+        <input type="range" id="inPrice" min="100000" max="800000" step="5000" value="320000" aria-label="Target home price" />
+        <span class="money"><span>$</span><input type="number" id="inPriceNum" value="320000" min="0" step="5000" inputmode="numeric" aria-label="Target home price in dollars" /></span>
+        <span class="fhelp">Drag to test different prices. Your likely maximum for each program is shown below.</span>
+      </label>
+
+      <label class="field">
+        <span class="flabel">Have you owned a home in the last 3 years?</span>
+        <span class="seg" role="group" aria-label="First time buyer status">
+          <button type="button" id="ftYes" aria-pressed="true">No, I am a first time buyer</button>
+          <button type="button" id="ftNo" aria-pressed="false">Yes, I have owned</button>
+        </span>
+        <span class="fhelp">First time buyers can put 3 percent down with Conventional and can use MSHDA help.</span>
+      </label>
+
+      <details class="adv">
+        <summary>Adjust the assumptions</summary>
+        <label class="field">
+          <span class="flabel">Interest rate <output id="oRate">7.15%</output></span>
+          <input type="range" id="inRate" min="4" max="11" step="0.05" value="7.15" aria-label="Interest rate percent" />
+          <span class="fhelp">FHA is modeled a quarter point lower, which is typical. MSHDA rates are set by the program and change daily.</span>
+        </label>
+        <label class="field">
+          <span class="flabel">Property taxes per year <output id="oTax">1.45% of price</output></span>
+          <input type="range" id="inTax" min="0.8" max="2.4" step="0.05" value="1.45" aria-label="Property tax rate percent" />
+          <span class="fhelp">A Grand Rapids area planning figure with the homestead exemption. Your actual millage will differ by address.</span>
+        </label>
+        <label class="field">
+          <span class="flabel">Closing costs <output id="oClose">3.0% of price</output></span>
+          <input type="range" id="inClose" min="2" max="5" step="0.25" value="3" aria-label="Closing costs percent" />
+          <span class="fhelp">Lender fees, title, appraisal, and prepaid taxes and insurance. Two to five percent is the normal range.</span>
+        </label>
+      </details>
+    </section>
+
+    <div>
+      <section class="card verdict" aria-labelledby="verdictTitle">
+        <span class="bestTag">Best fit for you right now</span>
+        <div class="bestName" id="bestName">MSHDA MI Home Loan with MI 10K help</div>
+        <p class="bestWhy" id="bestWhy"></p>
+        <div class="verdictGrid">
+          <div class="vstat"><div class="k">You likely qualify up to</div><div class="v" id="vMax">$0</div><p class="n" id="vMaxNote"></p></div>
+          <div class="vstat"><div class="k">Monthly payment at your price</div><div class="v" id="vPay">$0</div><p class="n">Includes taxes, insurance, and mortgage insurance where it applies.</p></div>
+          <div class="vstat"><div class="k">Cash needed to close</div><div class="v" id="vCash">$0</div><p class="n" id="vCashNote"></p></div>
+        </div>
+        <div class="gapLine gapOk" id="gapLine"></div>
+        <div class="shareActions">
+          <button class="btnSend" type="button" id="sendBtn">Send to Karan</button>
+          <div class="row2">
+            <button class="btnSave" type="button" id="saveBtn">Save Report</button>
+            <button class="btnCopy" type="button" id="copyBtn">Copy summary</button>
+          </div>
+        </div>
+        <div class="sendPanel" id="sendPanel">
+          <p><b>Your summary is ready.</b> Tap Open email to Karan and press send in your email app to deliver it. If no email app opens on this device, use the copy in this box and paste it into any email or text to Karan at karan.tamang@city2shore.com.</p>
+          <textarea id="sendText" rows="9" readonly aria-label="Your home buyer readiness summary, ready to copy"></textarea>
+          <div class="row2">
+            <a class="btnMailLink" id="sendMailLink" href="mailto:karan.tamang@city2shore.com">Open email to Karan</a>
+            <button class="btnCopy" type="button" id="sendCopyBtn">Copy summary</button>
+          </div>
+        </div>
+        <p class="shareNote"><b>Send to Karan</b> prepares the full summary right here on this page, copies it for you, and gives you an email button addressed only to Karan at karan.tamang@city2shore.com. Nothing is sent until you press send in your email. <b>Save Report</b> keeps this report on this device only, under the client name above. It is not uploaded, and no one else can open it from another device.</p>
+        <div class="actionStatus" id="actionStatus" role="status" aria-live="polite"></div>
+      </section>
+
+      <section class="card" aria-labelledby="scoreTitle">
+        <div class="cardHead"><h2 id="scoreTitle">Your readiness score</h2><span class="hint">A guide, not a grade</span></div>
+        <div class="scoreHead">
+          <div class="scoreNum" id="scoreNum">0</div>
+          <div><div class="scoreWord" id="scoreWord">Getting there</div><p class="sub" style="margin:0" id="scoreSub"></p></div>
+        </div>
+        <div class="meter" aria-hidden="true"><i id="scoreBar" style="width:0%"></i></div>
+        <div id="factors"></div>
+      </section>
+    </div>
+  </div>
+
+  <section class="card" aria-labelledby="savedTitle" style="margin-top:18px">
+    <div class="cardHead"><h2 id="savedTitle">Saved reports</h2><span class="hint">This device only</span></div>
+    <p class="sub">Reports you save stay on this phone or computer only. They are not sent anywhere and cannot be opened from another device. Load one to bring its numbers back into the calculator, or delete it when you no longer need it. Summaries you send go only to Karan.</p>
+    <div id="savedList"></div>
+  </section>
+
+  <div class="sectionTitle">
+    <h2>Compare your three options at your price</h2>
+    <p>Same home, same income, three different ways to buy it. Watch the cash needed and the monthly payment move, and notice what each program asks of your credit score.</p>
+  </div>
+  <div class="compare" id="compare"></div>
+
+  <div class="sectionTitle">
+    <h2 id="detailTitle">The full picture for your best fit</h2>
+    <p>Every dollar of the monthly payment and every dollar of cash to close, itemized. Pick any program above to see its detail here.</p>
+  </div>
+  <div class="detailGrid">
+    <section class="card" aria-labelledby="payTitle">
+      <div class="cardHead"><h2 id="payTitle" style="font-size:21px">Monthly payment breakdown</h2></div>
+      <div id="payBars"></div>
+      <div class="legend" id="payLegend"></div>
+      <dl class="rows" id="payRows"></dl>
+    </section>
+    <section class="card" aria-labelledby="cashTitle">
+      <div class="cardHead"><h2 id="cashTitle" style="font-size:21px">Cash to close, itemized</h2></div>
+      <dl class="rows" id="cashRows" style="margin-top:2px"></dl>
+      <div class="timeline" id="loanFacts"></div>
+    </section>
+  </div>
+
+  <div class="sectionTitle">
+    <h2>Your plan to get ready</h2>
+    <p>Built from your numbers, in the order that moves you fastest. Do the first step first.</p>
+  </div>
+  <section class="card" aria-labelledby="planTitle">
+    <h2 id="planTitle" class="sr">Your plan to get ready</h2>
+    <ol class="steps" id="steps"></ol>
+    <div class="timeline" id="saveTimeline"></div>
+  </section>
+
+  <div class="sectionTitle">
+    <h2>Good to know before you choose</h2>
+  </div>
+  <div class="notesGrid">
+    <div class="noteCard">
+      <h3>Conventional</h3>
+      <p>The standard loan, and usually the cheapest over time once your credit is strong.</p>
+      <ul>
+        <li>3 percent down for first time buyers, 5 percent for most others, 20 percent removes mortgage insurance entirely.</li>
+        <li>Mortgage insurance can be removed once you reach 20 percent equity. FHA insurance cannot, unless you refinance.</li>
+        <li>Needs a credit score of 620 or higher with most lenders, and rewards scores above 740 with the best pricing.</li>
+        <li>Loan limit of $832,750 in 2026.</li>
+      </ul>
+    </div>
+    <div class="noteCard">
+      <h3>FHA</h3>
+      <p>The flexible loan, built for buyers whose credit or savings are still catching up.</p>
+      <ul>
+        <li>3.5 percent down with a score of 580 or higher. Scores of 500 to 579 need 10 percent down.</li>
+        <li>Allows higher debts relative to income than Conventional, up to about 56.9 percent with strong compensating factors.</li>
+        <li>Adds an upfront mortgage insurance premium of 1.75 percent, rolled into the loan, plus about 0.55 percent per year.</li>
+        <li>Kent County loan limit of $541,287. The home must pass an FHA appraisal with health and safety checks.</li>
+      </ul>
+    </div>
+    <div class="noteCard">
+      <h3>MSHDA, Michigan help</h3>
+      <p>State help for first time buyers, and for repeat buyers in targeted areas, through participating lenders.</p>
+      <ul>
+        <li>MI 10K provides up to $10,000 toward down payment and closing costs, with no monthly payment.</li>
+        <li>The help is a second loan with zero interest, repaid when you sell, refinance, or pay off the first loan. It is not forgiven.</li>
+        <li>Needs a credit score of 640 or higher, a home price of $566,355 or less, and household income within MSHDA limits for your county and household size.</li>
+        <li>You bring at least 1 percent of the price from your own funds, and you complete a homebuyer education course.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="contact">
+    <div>
+      <h2>Ready to talk through your numbers?</h2>
+      <p>Karan Tamang, REALTOR® with City2Shore Foundations, can walk this plan with you, connect you with a local lender for a real preapproval, and start watching for homes that fit your price.</p>
+    </div>
+    <div class="contactBtns">
+      <a class="btnGold" href="tel:+16166176564">Call (616) 617 6564</a>
+      <a class="btnGhost" href="mailto:karan.tamang@city2shore.com">Email Karan</a>
+    </div>
+  </div>
+
+  <p class="fineprint">How to read this page: every figure is an estimate for planning only, based on the rate and cost assumptions shown in the form and program rules as of November 2026. It is not a loan offer, a preapproval, or financial advice. Your actual rate, payment, mortgage insurance, taxes, and cash to close will be set by your lender and the specific home you buy. MSHDA income limits, rates, and funding change, so confirm current terms with a participating MSHDA lender before you rely on them.</p>
+</div>
+
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var state = { firstTime:true, selected:null };
+  var COLORS = { pi:"#122A46", tax:"#B08A3E", ins:"#5B84AE", mi:"#C46A4A" };
+  if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches){ COLORS.pi = "#D3AC5F"; }
+
+  function num(id){ var v = parseFloat($(id).value); return isNaN(v) ? 0 : v; }
+  function money(v){ return "$" + Math.round(v).toLocaleString("en-US"); }
+  function pct(v){ return v.toFixed(1) + "%"; }
+
+  function pmiAnnualRate(credit, ltv){
+    if (ltv <= 0.80) return 0;
+    var base;
+    if (credit >= 760) base = 0.0038; else if (credit >= 740) base = 0.0050;
+    else if (credit >= 720) base = 0.0065; else if (credit >= 700) base = 0.0080;
+    else if (credit >= 680) base = 0.0095; else if (credit >= 660) base = 0.0115;
+    else if (credit >= 640) base = 0.0135; else if (credit >= 620) base = 0.0160;
+    else base = 0.0200;
+    if (ltv > 0.95) base *= 1.25; else if (ltv > 0.90) base *= 1.12;
+    return base;
+  }
+
+  function calc(prog, price, inp){
+    var downPct, rate = inp.rate, maxDti, eligible = true, eligNote = "";
+    if (prog === "conv"){
+      downPct = state.firstTime ? 0.03 : 0.05;
+      maxDti = inp.credit >= 700 ? 0.50 : 0.45;
+      if (inp.credit < 620){ eligible = false; eligNote = "Needs a score of 620 or higher"; }
+      if (price - price*downPct > 832750){ eligible = false; eligNote = "Above the $832,750 conforming limit"; }
+    } else if (prog === "fha"){
+      downPct = inp.credit >= 580 ? 0.035 : 0.10;
+      rate = Math.max(3, inp.rate - 0.25);
+      maxDti = 0.569;
+      if (inp.credit < 500){ eligible = false; eligNote = "Needs a score of 500 or higher"; }
+      if (price - price*downPct > 541287){ eligible = false; eligNote = "Above the Kent County FHA limit of $541,287"; }
+    } else {
+      downPct = 0.03; maxDti = 0.45;
+      if (inp.credit < 640){ eligible = false; eligNote = "Needs a score of 640 or higher"; }
+      if (!state.firstTime){ eligible = false; eligNote = "For first time buyers, or repeat buyers in targeted areas"; }
+      if (price > 566355){ eligible = false; eligNote = "Above the MSHDA price limit of $566,355"; }
+    }
+    var down = price * downPct;
+    var baseLoan = price - down;
+    var upfront = prog === "fha" ? baseLoan * 0.0175 : 0;
+    var loan = baseLoan + upfront;
+    var r = rate/100/12, n = 360;
+    var pi = loan * r / (1 - Math.pow(1+r, -n));
+    var tax = price * (inp.tax/100) / 12;
+    var ins = Math.max(110, price * 0.0035 / 12);
+    var mi = 0;
+    if (prog === "fha") mi = baseLoan * 0.0055 / 12;
+    else { var ltv = baseLoan / price; mi = baseLoan * pmiAnnualRate(inp.credit, ltv) / 12; }
+    var total = pi + tax + ins + mi;
+    var closing = price * (inp.close/100);
+    var dpa = prog === "mshda" ? Math.min(10000, down + closing) : 0;
+    var cash = Math.max(0, down + closing - dpa);
+    if (prog === "mshda") cash = Math.max(cash, price * 0.01);
+    var backDti = inp.monthlyIncome > 0 ? (total + inp.debts) / inp.monthlyIncome : 9;
+    var frontDti = inp.monthlyIncome > 0 ? total / inp.monthlyIncome : 9;
+    var affords = backDti <= maxDti + 0.0001;
+    return { prog:prog, price:price, downPct:downPct, down:down, baseLoan:baseLoan, upfront:upfront, loan:loan, rate:rate, pi:pi, tax:tax, ins:ins, mi:mi, total:total, closing:closing, dpa:dpa, cash:cash, backDti:backDti, frontDti:frontDti, maxDti:maxDti, eligible:eligible, eligNote:eligNote, affords:affords };
+  }
+
+  function maxPrice(prog, inp){
+    var lo = 50000, hi = 1200000, best = 0;
+    for (var i=0;i<42;i++){
+      var mid = (lo+hi)/2;
+      var c = calc(prog, mid, inp);
+      if (c.eligible && c.affords){ best = mid; lo = mid; } else { hi = mid; }
+    }
+    return best;
+  }
+
+  function creditWordFn(s){
+    if (s >= 740) return "Excellent. You should get the best pricing on every program.";
+    if (s >= 700) return "Strong. Every program is open, with good pricing.";
+    if (s >= 660) return "Good. Most programs are open to you, and MSHDA is within reach.";
+    if (s >= 640) return "Fair, and an important line. MSHDA opens up at 640.";
+    if (s >= 620) return "Fair. Conventional opens at 620, but pricing is costly. MSHDA needs 640.";
+    if (s >= 580) return "Building. FHA at 3.5 percent down is your main path right now.";
+    if (s >= 500) return "Building. FHA is possible with 10 percent down while you raise your score.";
+    return "Below 500, loan options are very limited. Credit work comes first.";
+  }
+
+  function readInputs(){
+    return {
+      income: num("inIncome"), debts: num("inDebts"), credit: num("inCredit"),
+      saved: num("inSaved"), saveMo: num("inSaveMo"), price: num("inPriceNum"),
+      rate: num("inRate"), tax: num("inTax"), close: num("inClose"),
+      monthlyIncome: num("inIncome")/12
+    };
+  }
+
+  var PROG_META = {
+    conv:{ name:"Conventional", full:"Conventional loan", tagline:"Lowest long term cost when credit is strong. Mortgage insurance can fall away at 20 percent equity." },
+    fha:{ name:"FHA", full:"FHA loan", tagline:"The flexible path. Lower credit scores and higher debts can still qualify." },
+    mshda:{ name:"MSHDA", full:"MSHDA MI Home Loan with MI 10K help", tagline:"Michigan state help that covers up to $10,000 of your down payment and closing costs." }
+  };
+
+  function recommend(res, inp){
+    var order = [];
+    var conv = res.conv, fha = res.fha, msh = res.mshda;
+    function ok(c){ return c.eligible && c.affords; }
+    var pick = null, why = "";
+    if (ok(msh) && inp.saved < msh.cash + 4000 && inp.credit >= 640){
+      pick = "mshda"; why = "Your credit clears the 640 MSHDA line and your price is under the $566,355 limit, so the $10,000 of state help cuts your cash to close to the lowest of the three while keeping the payment in range for your income.";
+    } else if (ok(conv) && inp.credit >= 700 && conv.downPct >= 0.03 && inp.saved >= conv.cash){
+      pick = "conv"; why = "Your credit score earns good Conventional pricing, you have the cash to close, and your mortgage insurance can be removed at 20 percent equity instead of lasting the life of the loan as it does with FHA.";
+    } else if (ok(fha) && !ok(conv)){
+      pick = "fha"; why = "FHA fits where Conventional does not right now, thanks to its lower credit floor and room for higher debts. It gets you into the home while you keep building credit.";
+    } else if (ok(conv)){
+      pick = "conv"; why = "Conventional gives you the cleanest long term cost at your credit score, with mortgage insurance that can be removed, and no upfront premium rolled into the loan.";
+    } else if (ok(msh)){
+      pick = "mshda"; why = "MSHDA is the one option that fits your income at this price, and the $10,000 of help keeps your cash to close within reach.";
+    } else if (ok(fha)){
+      pick = "fha"; why = "FHA is the option that fits your numbers at this price today.";
+    } else {
+      var near = [conv, fha, msh].filter(function(c){ return c.eligible; }).sort(function(a,b){ return a.backDti - b.backDti; })[0];
+      if (near){ pick = near.prog; why = "At this price, no program quite fits your income and debts yet. " + PROG_META[near.prog].name + " is your closest path, and your plan below shows exactly what to change to get there."; }
+      else { pick = "fha"; why = "No program fits yet at this price and credit score. Your plan below starts with the change that unlocks the most options."; }
+    }
+    order = [pick].concat(["mshda","conv","fha"].filter(function(p){ return p !== pick; }));
+    return { pick:pick, why:why, order:order };
+  }
+
+  function render(){
+    var inp = readInputs();
+    $("oIncome").textContent = money(inp.income);
+    $("oDebts").textContent = money(inp.debts);
+    $("oCredit").textContent = inp.credit;
+    $("creditWord").textContent = creditWordFn(inp.credit);
+    $("oSaved").textContent = money(inp.saved);
+    $("oSaveMo").textContent = money(inp.saveMo);
+    $("oPrice").textContent = money(inp.price);
+    $("oRate").textContent = inp.rate.toFixed(2) + "%";
+    $("oTax").textContent = inp.tax.toFixed(2) + "% of price";
+    $("oClose").textContent = inp.close.toFixed(1) + "% of price";
+
+    var res = { conv: calc("conv", inp.price, inp), fha: calc("fha", inp.price, inp), mshda: calc("mshda", inp.price, inp) };
+    var maxes = { conv: maxPrice("conv", inp), fha: maxPrice("fha", inp), mshda: maxPrice("mshda", inp) };
+    var rec = recommend(res, inp);
+    if (!state.selected) state.selected = rec.pick;
+    var best = res[rec.pick];
+    var sel = res[state.selected] || best;
+
+    $("bestName").textContent = PROG_META[rec.pick].full;
+    $("bestWhy").textContent = rec.why;
+    var bestMax = Math.max(maxes[rec.pick] || 0, 0);
+    $("vMax").textContent = bestMax ? money(bestMax) : "Not yet";
+    $("vMaxNote").textContent = bestMax ? "With " + PROG_META[rec.pick].name + ", based on your income and debts." : "See your plan below for the first step.";
+    $("vPay").textContent = money(best.total);
+    $("vCash").textContent = money(best.cash);
+    $("vCashNote").textContent = "At " + money(inp.price) + " with " + PROG_META[rec.pick].name + ". You have " + money(inp.saved) + " saved.";
+    var gap = best.cash - inp.saved;
+    var gapEl = $("gapLine");
+    if (!best.eligible){
+      gapEl.className = "gapLine gapNo";
+      gapEl.textContent = "Heads up on your best fit: " + best.eligNote + ". Your plan below shows how to clear it.";
+    } else if (!best.affords){
+      gapEl.className = "gapLine gapNo";
+      gapEl.textContent = "At " + money(inp.price) + " the payment takes " + pct(best.backDti*100) + " of your gross income once debts are counted. " + PROG_META[rec.pick].name + " allows about " + pct(best.maxDti*100) + ", so a lower price or lower debts gets you there.";
+    } else if (gap <= 0){
+      gapEl.className = "gapLine gapOk";
+      gapEl.textContent = "You are covered. Your savings cover the cash to close at this price, with " + money(-gap) + " to spare before moving costs and reserves.";
+    } else {
+      gapEl.className = "gapLine gapNo";
+      gapEl.textContent = "Cash gap of " + money(gap) + " at this price with " + PROG_META[rec.pick].name + "." + (inp.saveMo > 0 ? " Saving " + money(inp.saveMo) + " a month closes it in about " + Math.ceil(gap/inp.saveMo) + " months." : " Add a monthly saving amount to see how long the gap takes to close.");
+    }
+
+    renderCompare(res, maxes, rec);
+    renderDetail(sel, inp);
+    renderScore(res, rec, inp, maxes);
+    renderSteps(res, rec, inp, maxes);
+    state.last = { inp:inp, res:res, rec:rec, maxes:maxes };
+  }
+
+  function badgeFor(c, isBest){
+    if (isBest) return '<span class="badge bBest">Best fit</span>';
+    if (!c.eligible) return '<span class="badge bNo">Not yet</span>';
+    if (!c.affords) return '<span class="badge bWarn">Over budget</span>';
+    return '<span class="badge bOk">You qualify</span>';
+  }
+
+  function notesFor(c, inp){
+    var n = [];
+    if (c.prog === "conv"){
+      n.push(parseFloat((c.downPct*100).toFixed(1)) + " percent down for " + (state.firstTime ? "first time buyers" : "repeat buyers") + ".");
+      n.push(c.mi > 0 ? "Mortgage insurance of about " + money(c.mi) + " a month, removable at 20 percent equity." : "No mortgage insurance at this down payment.");
+      n.push("Debt limit used here: " + pct(c.maxDti*100) + " of gross income. Yours at this price: " + pct(c.backDti*100) + ".");
+      n.push("You likely qualify up to " + money(maxPriceCache.conv) + " with this program.");
+    } else if (c.prog === "fha"){
+      n.push(parseFloat((c.downPct*100).toFixed(1)) + " percent down at your credit score.");
+      n.push("Upfront mortgage insurance of " + money(c.upfront) + " is rolled into the loan, plus about " + money(c.mi) + " a month for the life of the loan in most cases.");
+      n.push("Debt limit used here: up to " + pct(c.maxDti*100) + " with strong factors. Yours at this price: " + pct(c.backDti*100) + ".");
+      n.push("You likely qualify up to " + money(maxPriceCache.fha) + " with this program.");
+    } else {
+      n.push("Includes $10,000 of MI 10K help toward down payment and closing costs, with no monthly payment.");
+      n.push("The help is repaid when you sell, refinance, or pay off the loan. It is not a grant.");
+      n.push("You bring at least 1 percent of the price yourself, plus a homebuyer education course.");
+      n.push("You likely qualify up to " + money(maxPriceCache.mshda) + " with this program.");
+    }
+    if (!c.eligible) n.unshift(c.eligNote + ".");
+    return n;
+  }
+  var maxPriceCache = { conv:0, fha:0, mshda:0 };
+
+  function renderCompare(res, maxes, rec){
+    maxPriceCache = maxes;
+    var html = "";
+    ["conv","fha","mshda"].forEach(function(p){
+      var c = res[p], meta = PROG_META[p], isBest = rec.pick === p;
+      html += '<article class="prog' + (isBest ? " best" : "") + (!c.eligible ? " dim" : "") + '">'
+        + '<div class="progTop"><h3>' + meta.name + '</h3>' + badgeFor(c, isBest) + '</div>'
+        + '<p class="tagline">' + meta.tagline + '</p>'
+        + '<div class="bigPay"><span class="amt">' + money(c.total) + '</span> <span class="per">per month</span></div>'
+        + '<dl class="rows">'
+        + '<div><dt>Down payment (' + (c.downPct*100).toFixed(1).replace(".0","") + '%)</dt><dd>' + money(c.down) + '</dd></div>'
+        + '<div><dt>Loan amount</dt><dd>' + money(c.loan) + '</dd></div>'
+        + '<div><dt>Rate used</dt><dd>' + c.rate.toFixed(2) + '%</dd></div>'
+        + '<div><dt>Closing costs est.</dt><dd>' + money(c.closing) + '</dd></div>'
+        + (c.dpa ? '<div><dt>MSHDA help</dt><dd>' + money(c.dpa) + '</dd></div>' : '')
+        + '<div class="total"><dt>Cash needed to close</dt><dd>' + money(c.cash) + '</dd></div>'
+        + '</dl>'
+        + '<ul class="notes">' + notesFor(c, state.last ? state.last.inp : readInputs()).map(function(t){ return "<li>" + t + "</li>"; }).join("") + '</ul>'
+        + '<div class="pick"><button type="button" data-pick="' + p + '" aria-pressed="' + (state.selected === p) + '">See full detail</button></div>'
+        + '</article>';
+    });
+    $("compare").innerHTML = html;
+    var btns = document.querySelectorAll("[data-pick]");
+    for (var i=0;i<btns.length;i++){ btns[i].addEventListener("click", function(){ state.selected = this.getAttribute("data-pick"); render(); document.getElementById("detailTitle").scrollIntoView({ behavior:"smooth", block:"start" }); }); }
+  }
+
+  function renderDetail(c, inp){
+    $("detailTitle").textContent = "The full picture: " + PROG_META[c.prog].full + " at " + money(c.price);
+    $("payTitle").textContent = "Monthly payment breakdown";
+    var parts = [
+      { k:"Principal and interest", v:c.pi, color:COLORS.pi },
+      { k:"Property taxes", v:c.tax, color:COLORS.tax },
+      { k:"Homeowners insurance", v:c.ins, color:COLORS.ins },
+      { k: c.prog === "fha" ? "FHA mortgage insurance" : "Mortgage insurance", v:c.mi, color:COLORS.mi }
+    ].filter(function(x){ return x.v > 0.5; });
+    var barHtml = '<div class="bar" role="img" aria-label="Payment split">';
+    parts.forEach(function(x){ barHtml += '<i style="width:' + (x.v/c.total*100) + '%;background:' + x.color + '"></i>'; });
+    barHtml += "</div>";
+    $("payBars").innerHTML = barHtml;
+    $("payLegend").innerHTML = parts.map(function(x){ return '<span><i style="background:' + x.color + '"></i>' + x.k + "</span>"; }).join("");
+    var rows = parts.map(function(x){ return "<div><dt>" + x.k + "</dt><dd>" + money(x.v) + "</dd></div>"; }).join("");
+    rows += '<div class="total"><dt>Total monthly payment</dt><dd>' + money(c.total) + "</dd></div>";
+    rows += "<div><dt>Plus your other debts</dt><dd>" + money(inp.debts) + "</dd></div>";
+    rows += "<div><dt>Share of gross income</dt><dd>" + pct(c.backDti*100) + " (limit " + pct(c.maxDti*100) + ")</dd></div>";
+    $("payRows").innerHTML = rows;
+
+    var cash = '<div><dt>Down payment</dt><dd>' + money(c.down) + "</dd></div>"
+      + "<div><dt>Closing costs estimate</dt><dd>" + money(c.closing) + "</dd></div>";
+    if (c.dpa) cash += "<div><dt>MSHDA MI 10K help</dt><dd>" + money(c.dpa) + "</dd></div>";
+    cash += '<div class="total"><dt>Cash needed to close</dt><dd>' + money(c.cash) + "</dd></div>"
+      + "<div><dt>You have saved</dt><dd>" + money(inp.saved) + "</dd></div>"
+      + "<div><dt>" + (c.cash > inp.saved ? "Still to save" : "Left over after closing") + "</dt><dd>" + money(Math.abs(c.cash - inp.saved)) + "</dd></div>";
+    $("cashRows").innerHTML = cash;
+    var facts = "<b>Loan facts.</b> " + money(c.loan) + " loan at " + c.rate.toFixed(2) + "% for 30 years.";
+    if (c.prog === "fha") facts += " That includes the upfront mortgage insurance premium of " + money(c.upfront) + " rolled into the loan. Monthly mortgage insurance runs for the life of the loan when you put less than 10 percent down, so many FHA buyers refinance into Conventional later.";
+    else if (c.prog === "mshda") facts += " The MI 10K help sits behind this loan as a second loan of " + money(c.dpa) + " with zero interest and no monthly payment, due when you sell, refinance, or pay off the first loan.";
+    else facts += c.mi > 0 ? " Mortgage insurance of about " + money(c.mi) + " a month is included until you reach about 20 percent equity, then it can be removed." : " No mortgage insurance is included at this down payment.";
+    $("loanFacts").innerHTML = facts;
+  }
+
+  function factor(label, score, note){
+    return { label:label, score:Math.max(0, Math.min(100, Math.round(score))), note:note };
+  }
+
+  function computeScore(res, rec, inp, maxes){
+    var best = res[rec.pick];
+    var creditScoreF = inp.credit >= 740 ? 100 : inp.credit >= 700 ? 88 : inp.credit >= 660 ? 74 : inp.credit >= 640 ? 64 : inp.credit >= 620 ? 52 : inp.credit >= 580 ? 40 : inp.credit >= 500 ? 24 : 10;
+    var dti = best.backDti;
+    var dtiF = dti <= 0.36 ? 100 : dti <= 0.43 ? 84 : dti <= 0.50 ? 64 : dti <= 0.57 ? 42 : 20;
+    var cashF = best.cash <= 0 ? 100 : Math.min(100, inp.saved / best.cash * 100);
+    var optionsF = [res.conv, res.fha, res.mshda].filter(function(c){ return c.eligible && c.affords; }).length / 3 * 100;
+    var factors = [
+      factor("Credit score", creditScoreF, inp.credit + " today. " + (inp.credit < 640 ? "Reaching 640 opens MSHDA, and 700 or higher earns clearly better Conventional pricing." : inp.credit < 740 ? "Reaching 740 earns the best loan pricing." : "Top tier pricing is available to you.")),
+      factor("Debts versus income", dtiF, "Your payment plus debts take " + pct(dti*100) + " of gross income at your target price. Lenders are most comfortable at 45 percent or less."),
+      factor("Cash ready", cashF, money(inp.saved) + " saved against " + money(best.cash) + " needed to close with your best fit program."),
+      factor("Options open to you", optionsF, [res.conv, res.fha, res.mshda].filter(function(c){ return c.eligible && c.affords; }).length + " of 3 programs fit your numbers at this price right now.")
+    ];
+    var total = Math.round(factors[0].score*0.3 + factors[1].score*0.3 + factors[2].score*0.25 + factors[3].score*0.15);
+    return { total:total, factors:factors };
+  }
+
+  function renderScore(res, rec, inp, maxes){
+    var s = computeScore(res, rec, inp, maxes);
+    $("scoreNum").textContent = s.total;
+    $("scoreBar").style.width = s.total + "%";
+    var word = s.total >= 80 ? "Ready to buy" : s.total >= 60 ? "Close, with a clear path" : s.total >= 40 ? "Getting there" : "Early days, start with step one";
+    $("scoreWord").textContent = word;
+    $("scoreSub").textContent = s.total >= 80 ? "Your numbers fit a real purchase. A lender preapproval is your next move." : s.total >= 60 ? "One or two focused moves put you in buying position." : "The plan below is sequenced so each step unlocks the next.";
+    $("factors").innerHTML = s.factors.map(function(f){
+      return '<div class="factor"><div class="bl"><span>' + f.label + '</span><span>' + f.score + ' of 100</span></div><div class="track"><i style="width:' + f.score + '%"></i></div><p>' + f.note + "</p></div>";
+    }).join("");
+  }
+
+  function renderSteps(res, rec, inp, maxes){
+    var steps = [];
+    var best = res[rec.pick];
+    var overallMax = Math.max(maxes.conv, maxes.fha, maxes.mshda);
+    if (inp.credit < 580){
+      steps.push({ t:"Raise your credit score first", p:"At " + inp.credit + ", your only loan path today is FHA with 10 percent down, and below 500 even that closes. Pay cards down below 30 percent of their limits, pay everything on time, and avoid new credit. Reaching 580 unlocks FHA at 3.5 percent down, 620 unlocks Conventional, and 640 unlocks MSHDA help." });
+    } else if (inp.credit < 640){
+      steps.push({ t:"Push your score to 640", p:"You are " + (640 - inp.credit) + " points from the MSHDA line. Crossing it can put up to $10,000 of state help toward your down payment and closing costs, which is often worth more than months of extra saving." });
+    } else if (inp.credit < 700){
+      steps.push({ t:"Keep building toward 700", p:"You already qualify broadly at " + inp.credit + ". Scores of 700 and above earn better rates and cheaper mortgage insurance, which can save more each month than a slightly bigger down payment." });
+    }
+    if (!best.affords || inp.price > overallMax){
+      var targetPrice = overallMax ? money(overallMax) : "a lower price";
+      var debtRoom = Math.max(0, Math.round(best.maxDti * inp.monthlyIncome - best.total - inp.debts));
+      steps.push({ t:"Bring the payment into range", p:"At " + money(inp.price) + ", your payment plus debts take " + pct(best.backDti*100) + " of gross income against a limit near " + pct(best.maxDti*100) + ". Two levers fix it: shop near " + targetPrice + " instead, or lower monthly debts. Every $100 a month of debt you remove raises the price you can carry by roughly $15,000 to $18,000 at today\u2019s rates." });
+    }
+    var gap = best.cash - inp.saved;
+    if (gap > 0){
+      steps.push({ t:"Close the cash gap of " + money(gap), p:"With " + PROG_META[rec.pick].name + " you need " + money(best.cash) + " to close and you have " + money(inp.saved) + ". " + (inp.saveMo > 0 ? "At " + money(inp.saveMo) + " a month you are there in about " + Math.ceil(gap/inp.saveMo) + " months. " : "") + "Seller concessions and gift funds from family can also count with most programs, and MSHDA help is already counted where it applies." });
+    } else {
+      steps.push({ t:"Protect the cash you have", p:"Your savings cover closing with " + money(-gap) + " left over. Keep at least three months of payments untouched as your emergency cushion, and do not open new debts or move large sums without telling your lender first." });
+    }
+    if (rec.pick === "mshda"){
+      steps.push({ t:"Line up MSHDA early", p:"MSHDA loans run through participating lenders only, and the homebuyer education course takes a few hours online. Do both before you shop, and confirm your household income sits within the MSHDA limit for your county and household size." });
+    }
+    if (rec.pick === "fha"){
+      steps.push({ t:"Plan your FHA exit", p:"FHA mortgage insurance usually lasts the life of the loan. Buy with FHA now if it fits, then refinance into Conventional once your credit and equity reach 20 percent to drop that cost for good." });
+    }
+    steps.push({ t:"Get a real preapproval", p:"This page plans with estimates. A local lender can verify income, debts, and credit in about a day and give you the letter sellers require. Ask Karan for lender options who work with " + PROG_META[rec.pick].name + " loans in West Michigan." });
+    steps.push({ t:"Start watching homes at your number", p:"Your likely ceiling with your best fit is " + (maxes[rec.pick] ? money(maxes[rec.pick]) : "still to be set") + ", and your target is " + money(inp.price) + ". Watching listings in that range now teaches you what your money buys in each neighborhood before you are ready to offer." });
+    $("steps").innerHTML = steps.slice(0,5).map(function(s){ return "<li><div><b>" + s.t + "</b><p>" + s.p + "</p></div></li>"; }).join("");
+    var tl = "";
+    if (gap > 0 && inp.saveMo > 0){
+      var months = Math.ceil(gap/inp.saveMo);
+      var d = new Date(); d.setMonth(d.getMonth() + months);
+      var monthName = d.toLocaleDateString("en-US", { month:"long", year:"numeric" });
+      tl = "<b>Your timeline.</b> Saving " + money(inp.saveMo) + " a month, your cash to close is ready around <b>" + monthName + "</b>, about " + months + " months from now. Use that window for the credit and lender steps above, and you can be shopping with a preapproval the moment the cash lands.";
+    } else if (gap <= 0){
+      tl = "<b>Your timeline.</b> Your cash is ready now. The remaining timeline is a lender preapproval, which usually takes a day or two once documents are in, and then your home search itself.";
+    } else {
+      tl = "<b>Your timeline.</b> Add the amount you can save each month in the form, and this plan will turn your cash gap into a target month.";
+    }
+    $("saveTimeline").innerHTML = tl;
+  }
+
+  function syncFromRange(){ $("inPriceNum").value = $("inPrice").value; render(); }
+  function syncFromNum(){ var v = num("inPriceNum"); if (v >= 100000 && v <= 800000) $("inPrice").value = v; render(); }
+
+  ["inIncome","inDebts","inSaved","inSaveMo"].forEach(function(id){ $(id).addEventListener("input", render); });
+  ["inCredit","inRate","inTax","inClose"].forEach(function(id){ $(id).addEventListener("input", render); });
+  $("inPrice").addEventListener("input", syncFromRange);
+  $("inPriceNum").addEventListener("input", syncFromNum);
+  $("ftYes").addEventListener("click", function(){ state.firstTime = true; state.selected = null; $("ftYes").setAttribute("aria-pressed","true"); $("ftNo").setAttribute("aria-pressed","false"); render(); });
+  $("ftNo").addEventListener("click", function(){ state.firstTime = false; state.selected = null; $("ftYes").setAttribute("aria-pressed","false"); $("ftNo").setAttribute("aria-pressed","true"); render(); });
+  var STORE_KEY = "hbrc_saved_reports_v1";
+  var memReports = null;
+  function loadReports(){
+    if (memReports) return memReports.slice();
+    try {
+      var raw = window.localStorage.getItem(STORE_KEY);
+      var arr = raw ? JSON.parse(raw) : [];
+      return Array.isArray(arr) ? arr : [];
+    } catch (e) { return []; }
+  }
+  function persistReports(arr){
+    memReports = arr.slice();
+    try { window.localStorage.setItem(STORE_KEY, JSON.stringify(arr)); } catch (e) { /* session only if storage is blocked */ }
+  }
+  function clientName(){ var v = $("inClientName").value; return v ? v.trim() : ""; }
+  function showStatus(msg, ok){
+    var el = $("actionStatus");
+    el.textContent = msg;
+    el.className = "actionStatus show " + (ok ? "ok" : "err");
+  }
+  function buildSummary(name, L){
+    var best = L.res[L.rec.pick];
+    var score = computeScore(L.res, L.rec, L.inp, L.maxes).total;
+    var lines = [
+      "Home Buyer Readiness Summary",
+      "Client: " + (name || "Not provided"),
+      "Date: " + new Date().toLocaleDateString("en-US", { year:"numeric", month:"long", day:"numeric" }),
+      "",
+      "Inputs",
+      "Home price in mind: " + money(L.inp.price),
+      "Household income: " + money(L.inp.income) + " per year",
+      "Monthly debts: " + money(L.inp.debts),
+      "Credit score: " + L.inp.credit,
+      "Cash saved: " + money(L.inp.saved) + " (can save " + money(L.inp.saveMo) + " per month)",
+      "First time buyer (no home owned in last 3 years): " + (state.firstTime ? "Yes" : "No"),
+      "Assumptions: rate " + L.inp.rate.toFixed(2) + "%, taxes " + L.inp.tax.toFixed(2) + "% of price, closing costs " + L.inp.close.toFixed(1) + "% of price",
+      "",
+      "Best fit: " + PROG_META[L.rec.pick].full,
+      "Why: " + L.rec.why,
+      "Likely qualify up to: " + money(L.maxes[L.rec.pick]),
+      "Monthly payment at target price: " + money(best.total) + " (principal and interest " + money(best.pi) + ", taxes " + money(best.tax) + ", insurance " + money(best.ins) + (best.mi > 0 ? ", mortgage insurance " + money(best.mi) : "") + ")",
+      "Cash needed to close: " + money(best.cash) + " (down payment " + money(best.down) + ", closing costs " + money(best.closing) + (best.dpa ? ", less MSHDA help " + money(best.dpa) : "") + ")",
+      "Readiness score: " + score + " of 100",
+      "",
+      "All three options at " + money(L.inp.price),
+      "Conventional: " + money(L.res.conv.total) + " per month, " + money(L.res.conv.cash) + " cash to close, likely max " + money(L.maxes.conv),
+      "FHA: " + money(L.res.fha.total) + " per month, " + money(L.res.fha.cash) + " cash to close, likely max " + money(L.maxes.fha),
+      "MSHDA: " + money(L.res.mshda.total) + " per month, " + money(L.res.mshda.cash) + " cash to close, likely max " + money(L.maxes.mshda),
+      "",
+      "Estimates only, not a lender preapproval. Prepared with the Home Buyer Readiness Calculator for Karan Tamang, REALTOR, City2Shore Foundations."
+    ];
+    return lines.join("\n");
+  }
+  function renderSavedList(){
+    var reports = loadReports();
+    var box = $("savedList");
+    if (!reports.length){
+      box.innerHTML = '<p class="savedEmpty">No saved reports yet. Enter a client name above, then tap Save Report.</p>';
+      return;
+    }
+    var html = "";
+    reports.forEach(function(r){
+      var d = new Date(r.savedAt);
+      var when = isNaN(d.getTime()) ? "" : d.toLocaleDateString("en-US", { month:"short", day:"numeric", year:"numeric" });
+      var detail = when + (r.summary ? " · " + r.summary : "");
+      html += '<div class="savedItem"><div class="meta"><div class="nm"></div><div class="dt">' + detail + '</div></div>'
+        + '<div class="acts"><button type="button" class="savedLoad" data-load="' + r.id + '">Load</button>'
+        + '<button type="button" class="savedDel" data-del="' + r.id + '">Delete</button></div></div>';
+    });
+    box.innerHTML = html;
+    var names = box.querySelectorAll(".savedItem .nm");
+    reports.forEach(function(r, i){ if (names[i]) names[i].textContent = r.name; });
+    var loads = box.querySelectorAll("[data-load]");
+    for (var i = 0; i < loads.length; i++) loads[i].addEventListener("click", function(){ loadReport(this.getAttribute("data-load")); });
+    var dels = box.querySelectorAll("[data-del]");
+    for (var j = 0; j < dels.length; j++) dels[j].addEventListener("click", function(){ deleteReport(this.getAttribute("data-del")); });
+  }
+  function applyInputs(inp, firstTime){
+    $("inIncome").value = inp.income; $("inDebts").value = inp.debts; $("inCredit").value = inp.credit;
+    $("inSaved").value = inp.saved; $("inSaveMo").value = inp.saveMo;
+    $("inPrice").value = inp.price; $("inPriceNum").value = inp.price;
+    $("inRate").value = inp.rate; $("inTax").value = inp.tax; $("inClose").value = inp.close;
+    state.firstTime = firstTime !== false;
+    $("ftYes").setAttribute("aria-pressed", state.firstTime ? "true" : "false");
+    $("ftNo").setAttribute("aria-pressed", state.firstTime ? "false" : "true");
+    state.selected = null;
+  }
+  function loadReport(id){
+    var reports = loadReports();
+    var r = null;
+    for (var i = 0; i < reports.length; i++) if (String(reports[i].id) === String(id)) r = reports[i];
+    if (!r || !r.inputs) return;
+    $("inClientName").value = r.name || "";
+    applyInputs(r.inputs, r.firstTime);
+    render();
+    showStatus("Loaded the saved report for " + r.name + ". The numbers above now match that report.", true);
+    document.getElementById("formTitle").scrollIntoView({ behavior:"smooth", block:"start" });
+  }
+  function deleteReport(id){
+    var reports = loadReports();
+    var removed = null;
+    var kept = reports.filter(function(r){ if (String(r.id) === String(id)) { removed = r; return false; } return true; });
+    persistReports(kept);
+    renderSavedList();
+    if (removed) showStatus("Deleted the saved report for " + removed.name + " from this device.", true);
+  }
+  $("saveBtn").addEventListener("click", function(){
+    var L = state.last; if (!L) return;
+    var name = clientName();
+    if (!name){
+      showStatus("Add a client name in the form first, then tap Save Report so the report is filed under that name.", false);
+      $("inClientName").focus();
+      document.getElementById("formTitle").scrollIntoView({ behavior:"smooth", block:"start" });
+      return;
+    }
+    var best = L.res[L.rec.pick];
+    var report = {
+      id: Date.now(),
+      name: name,
+      savedAt: new Date().toISOString(),
+      firstTime: state.firstTime,
+      inputs: { income:L.inp.income, debts:L.inp.debts, credit:L.inp.credit, saved:L.inp.saved, saveMo:L.inp.saveMo, price:L.inp.price, rate:L.inp.rate, tax:L.inp.tax, close:L.inp.close },
+      summary: PROG_META[L.rec.pick].name + " at " + money(L.inp.price) + " · " + money(best.total) + " per month · " + money(best.cash) + " cash to close"
+    };
+    var reports = loadReports();
+    var updated = false;
+    for (var i = 0; i < reports.length; i++){
+      if (reports[i].name.toLowerCase() === name.toLowerCase()){ report.id = reports[i].id; reports[i] = report; updated = true; break; }
+    }
+    if (!updated) reports.unshift(report);
+    persistReports(reports);
+    renderSavedList();
+    showStatus((updated ? "Updated" : "Saved") + " the report for " + name + " on this device only. Find it in Saved reports below.", true);
+  });
+  function copyText(text, done){
+    function fallback(){
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.top = "0";
+      ta.style.left = "0";
+      ta.style.width = "2px";
+      ta.style.height = "2px";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = false;
+      try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+      ta.remove();
+      done(ok);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){ done(true); }, fallback);
+    } else { fallback(); }
+  }
+  $("sendBtn").addEventListener("click", function(){
+    var L = state.last; if (!L) return;
+    var name = clientName();
+    var subject = "Home Buyer Readiness" + (name ? " — " + name : " Summary");
+    var body = buildSummary(name, L);
+    $("sendText").value = body;
+    $("sendMailLink").href = "mailto:karan.tamang@city2shore.com?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+    $("sendPanel").className = "sendPanel show";
+    copyText(body, function(ok){
+      showStatus(ok
+        ? "Your summary is ready in the box below and a copy is on your clipboard. Tap Open email to Karan to send it from your email app, or paste the copy into any email or text to Karan."
+        : "Your summary is ready in the box below. Tap Open email to Karan to send it from your email app, or select the text in the box and copy it into any email or text to Karan.", true);
+    });
+    $("sendPanel").scrollIntoView({ behavior:"smooth", block:"nearest" });
+  });
+  $("sendCopyBtn").addEventListener("click", function(){
+    var btn = this;
+    copyText($("sendText").value, function(ok){
+      btn.textContent = ok ? "Copied" : "Select the text above to copy";
+      setTimeout(function(){ btn.textContent = "Copy summary"; }, 3200);
+      if (ok) showStatus("Summary copied. Paste it into any email or text addressed to Karan at karan.tamang@city2shore.com.", true);
+    });
+  });
+  $("copyBtn").addEventListener("click", function(){
+    var L = state.last; if (!L) return;
+    var lines = buildSummary(clientName(), L);
+    var btn = this;
+    copyText(lines, function(ok){
+      btn.textContent = ok ? "Copied. Paste it in a text or email to Karan." : "Copy was blocked. Tap Send to Karan and copy from the box.";
+      setTimeout(function(){ btn.textContent = "Copy summary"; }, 3200);
+    });
+  });
+
+  render();
+  renderSavedList();
+})();
+</script>
+</body>
+</html>
