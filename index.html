@@ -68,9 +68,13 @@
   .flabel output{ font-weight:800; color:var(--navy2); background:var(--blueBg); border-radius:8px; padding:2px 9px; font-size:14px; white-space:nowrap; }
   @media (prefers-color-scheme: dark){ .flabel output{ color:var(--ink); } }
   .fhelp{ font-size:13px; color:var(--muted); margin-top:2px; }
-  input[type="number"], input[type="text"], select{ width:100%; margin-top:7px; padding:10px 12px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface); color:var(--ink); font:inherit; font-size:16px; }
-  input[type="number"]:focus, input[type="text"]:focus, select:focus, input[type="range"]:focus-visible{ outline:3px solid var(--goldSoft); border-color:var(--gold); }
+  input[type="number"], input[type="text"], input[type="email"], input[type="tel"], select{ width:100%; margin-top:7px; padding:10px 12px; border:1.5px solid var(--line); border-radius:10px; background:var(--surface); color:var(--ink); font:inherit; font-size:16px; }
+  input[type="number"]:focus, input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus, select:focus, input[type="range"]:focus-visible{ outline:3px solid var(--goldSoft); border-color:var(--gold); }
   .reqMark{ color:var(--goldInk); font-weight:800; }
+  .optMark{ color:var(--muted); font-weight:600; font-size:13.5px; }
+  .contactFields{ margin-top:18px; border-top:1px solid var(--line); padding-top:4px; }
+  .contactFields .contactIntro{ font-size:14.5px; color:var(--ink2); margin-top:12px; line-height:1.5; }
+  .contactFields .contactIntro b{ color:var(--ink); }
   input.fieldInvalid{ border-color:var(--red) !important; outline:3px solid var(--redBg); }
   .fieldError{ display:none; font-size:13px; font-weight:700; color:var(--red); margin-top:5px; }
   .fieldError.show{ display:block; }
@@ -261,6 +265,20 @@
         <span class="fieldError" id="errClientName" role="alert">Please enter your full name.</span>
         <span class="fhelp">Used to label a saved report and to head your copied summary.</span>
       </label>
+
+      <div class="contactFields">
+        <p class="contactIntro"><b>Want Karan to follow up on your results?</b> Leave a phone number or email. Both are optional — leave them blank if you prefer.</p>
+        <label class="field">
+          <span class="flabel"><span>Phone number <span class="optMark">(optional)</span></span></span>
+          <input type="tel" id="inPhone" placeholder="e.g. (616) 555-0123" autocomplete="tel" inputmode="tel" />
+          <span class="fhelp">Best number for Karan to call or text about your results.</span>
+        </label>
+        <label class="field">
+          <span class="flabel"><span>Email address <span class="optMark">(optional)</span></span></span>
+          <input type="email" id="inEmail" placeholder="e.g. you@example.com" autocomplete="email" inputmode="email" />
+          <span class="fhelp">Only used so Karan can reach you about your results.</span>
+        </label>
+      </div>
 
       <label class="field">
         <span class="flabel"><span>Household income per year <span class="reqMark" aria-hidden="true">*</span></span> <output id="oIncome">—</output></span>
@@ -893,7 +911,7 @@
   function syncFromRange(){ $("inPriceNum").value = $("inPrice").value; render(); }
   function syncFromNum(){ var v = num("inPriceNum"); if (v >= 100000 && v <= 800000) $("inPrice").value = v; render(); }
 
-  ["inClientName","inIncome","inDebts","inSaved","inSaveMo"].forEach(function(id){ $(id).addEventListener("input", render); });
+  ["inClientName","inPhone","inEmail","inIncome","inDebts","inSaved","inSaveMo"].forEach(function(id){ var el = $(id); if (el) el.addEventListener("input", render); });
   ["inCredit","inRate","inTax","inClose"].forEach(function(id){ $(id).addEventListener("input", render); });
   $("inPrice").addEventListener("input", syncFromRange);
   $("inPriceNum").addEventListener("input", syncFromNum);
@@ -902,6 +920,8 @@
   var FORM_RESPONSE_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfk0nNqxKCLtpe1tW-uKUH7MRvRGp0T-7r2tW77JkbS7xNPeg/formResponse";
   var FORM_ENTRIES = {
     clientName: "entry.1354418155",
+    phone: "entry.83039923",
+    email: "entry.366947265",
     monthlyIncome: "entry.1454199432",
     monthlyDebts: "entry.1402870022",
     creditScore: "entry.868495072",
@@ -923,8 +943,11 @@
       var nameEl = $("inClientName");
       if (nameEl && nameEl.value && nameEl.value.trim()) nameVal = nameEl.value.trim();
       if (!nameVal) nameVal = "Not provided";
+      var contact = contactInfo();
       var params = new URLSearchParams();
       params.set(FORM_ENTRIES.clientName, nameVal);
+      params.set(FORM_ENTRIES.phone, contact.phone || "Not provided");
+      params.set(FORM_ENTRIES.email, contact.email || "Not provided");
       params.set(FORM_ENTRIES.monthlyIncome, String(Math.round(L.inp.monthlyIncome)));
       params.set(FORM_ENTRIES.monthlyDebts, String(Math.round(L.inp.debts)));
       params.set(FORM_ENTRIES.creditScore, String(Math.round(L.inp.credit)));
@@ -985,6 +1008,13 @@
     try { window.localStorage.setItem(STORE_KEY, JSON.stringify(arr)); } catch (e) { /* session only if storage is blocked */ }
   }
   function clientName(){ var v = $("inClientName").value; return v ? v.trim() : ""; }
+  function contactInfo(){
+    var phoneEl = $("inPhone"), emailEl = $("inEmail");
+    return {
+      phone: phoneEl && phoneEl.value ? phoneEl.value.trim() : "",
+      email: emailEl && emailEl.value ? emailEl.value.trim() : ""
+    };
+  }
   function showStatus(msg, ok){
     var el = $("actionStatus");
     el.textContent = msg;
@@ -993,9 +1023,12 @@
   function buildSummary(name, L){
     var best = L.res[L.rec.pick];
     var score = computeScore(L.res, L.rec, L.inp, L.maxes).total;
+    var contact = contactInfo();
     var lines = [
       "Home Buyer Readiness Summary",
       "Name: " + (name || "Not provided"),
+      "Phone: " + (contact.phone || "Not provided"),
+      "Email: " + (contact.email || "Not provided"),
       "Date: " + new Date().toLocaleDateString("en-US", { year:"numeric", month:"long", day:"numeric" }),
       "",
       "Inputs",
@@ -1063,6 +1096,9 @@
     for (var i = 0; i < reports.length; i++) if (String(reports[i].id) === String(id)) r = reports[i];
     if (!r || !r.inputs) return;
     $("inClientName").value = r.name || "";
+    var phoneEl = $("inPhone"), emailEl = $("inEmail");
+    if (phoneEl) phoneEl.value = r.phone || "";
+    if (emailEl) emailEl.value = r.email || "";
     applyInputs(r.inputs, r.firstTime);
     render();
     showStatus("Loaded the saved report for " + r.name + ". The numbers above now match that report.", true);
@@ -1087,9 +1123,12 @@
       return;
     }
     var best = L.res[L.rec.pick];
+    var contact = contactInfo();
     var report = {
       id: Date.now(),
       name: name,
+      phone: contact.phone,
+      email: contact.email,
       savedAt: new Date().toISOString(),
       firstTime: state.firstTime,
       inputs: { income:L.inp.income, debts:L.inp.debts, credit:L.inp.credit, saved:L.inp.saved, saveMo:L.inp.saveMo, price:L.inp.price, rate:L.inp.rate, tax:L.inp.tax, close:L.inp.close },
@@ -1166,6 +1205,13 @@
     ["Use your best honest estimates. Fields marked ", "तपाईंका सबैभन्दा इमानदार अनुमानहरू प्रयोग गर्नुहोस्। "],
     [" are required to calculate your estimates. When you tap Calculate, your results are shared with Karan Tamang so he can follow up with you.", " चिन्ह लगाइएका क्षेत्रहरू तपाईंको अनुमान गणना गर्न आवश्यक छन्। तपाईंले गणना गर्नुहोस् थिच्दा, तपाईंको नतिजा Karan Tamang सँग साझा हुन्छ ताकि उनले तपाईंसँग सम्पर्क गर्न सकून्।"],
     ["Your full name", "तपाईंको पूरा नाम"],
+    ["Phone number", "फोन नम्बर"],
+    ["Email address", "इमेल ठेगाना"],
+    ["(optional)", "(वैकल्पिक)"],
+    ["Want Karan to follow up on your results?", "के तपाईं Karan ले तपाईंको नतिजाबारे सम्पर्क गरोस् भन्ने चाहनुहुन्छ?"],
+    ["Leave a phone number or email. Both are optional — leave them blank if you prefer.", "फोन नम्बर वा इमेल छोड्नुहोस्। दुवै वैकल्पिक हुन् — चाहनुहुन्न भने खाली छोड्नुहोस्।"],
+    ["Best number for Karan to call or text about your results.", "तपाईंको नतिजाबारे Karan ले कल वा टेक्स्ट गर्न सक्ने सबैभन्दा राम्रो नम्बर।"],
+    ["Only used so Karan can reach you about your results.", "तपाईंको नतिजाबारे Karan ले तपाईंसँग सम्पर्क गर्नका लागि मात्र प्रयोग हुन्छ।"],
     ["Household income per year", "वार्षिक घरायसी आम्दानी"],
     ["Monthly debts", "मासिक ऋण"],
     ["Cash saved for the home", "घरका लागि बचत गरेको नगद"],
@@ -1312,6 +1358,8 @@
   FRAG.sort(function(a,b){ return b[0].length - a[0].length; });
   var PH = {
     "e.g. Alex Johnson": "उदा. Alex Johnson",
+    "e.g. (616) 555-0123": "उदा. (616) 555-0123",
+    "e.g. you@example.com": "उदा. you@example.com",
     "e.g. 85,000": "उदा. 85,000",
     "e.g. 450": "उदा. 450",
     "e.g. 18,000": "उदा. 18,000",
